@@ -48,14 +48,14 @@
                         <li><a href="/teashop">Main</a></li>
                         <li><a href="/teashop/categoryList">Shop</a>
                         <li><a href="/teashop/cart">Cart</a></li>
-                        <li><p> </p> </li>
-                        <li><a href="login">Login</a></li>
-                        <li><a href = "register">Register</a></li>
-                        <li><p> </p> </li>
-                        <li><a href="language?id=1">English</a></li>
-                        <li><a href="language?id=2">Русский</a></li>
-                        <li><p> </p> </li>
-                        <li><a href="admin/login">Admin Page</a></li>
+                        <li><p></p></li>
+                        <li><a href="/teashop/login">Login</a></li>
+                        <li><a href="/teashop/register">Register</a></li>
+                        <li><p></p></li>
+                        <li><a href="/teashop/language?id=1">English</a></li>
+                        <li><a href="/teashop/language?id=2">Русский</a></li>
+                        <li><p></p></li>
+                        <li><a href="/teashop/admin/login">Admin Page</a></li>
                     </c:otherwise>
                 </c:choose>
             </ul>
@@ -87,16 +87,17 @@
                             <c:forEach var="product" items="${products}">
                                 <tr>
                                 <c:if test="${product.languageId == 1}">
-                                    <td><img src="<c:url value = "${product.pathToPicture}"/>" alt="${product.pathToPicture}"/></td>
-                                    <td><c:out value="${product.id}" /></td>
-                                    <c:forEach var = "category" items="${categories}">
+                                    <td><img src="${pageContext.request.contextPath}/${product.pathToPicture}"
+                                             width="100px" height="100px" alt="${product.pathToPicture}"/></td>
+                                    <td><c:out value="${product.id}"/></td>
+                                    <c:forEach var="category" items="${categories}">
                                         <c:if test="${category.id == product.categoryId}">
-                                            <td><c:out value="${category.name}" /></td>
+                                            <td><c:out value="${category.name}"/></td>
                                         </c:if>
                                     </c:forEach>
-                                    <td><c:out value="${product.name}" /></td>
-                                    <td><c:out value="${product.description}" /></td>
-                                    <td><c:out value="${product.price}" /></td>
+                                    <td><c:out value="${product.name}"/></td>
+                                    <td><c:out value="${product.description}"/></td>
+                                    <td><c:out value="${product.price}"/></td>
                                     <td>
                                         <a href="/teashop/admin/products/edit?id=<c:out value='${product.id}' />">Ред-ть</a>
                                         &nbsp;&nbsp;&nbsp;&nbsp;
@@ -133,17 +134,18 @@
                             <c:forEach var="product" items="${products}">
                                 <tr>
                                 <c:if test="${product.languageId == 1}">
-                                    <td><img src="<c:url value = "${product.pathToPicture}"/>" alt="${product.pathToPicture}"/></td>
-                                    <td><c:out value="${product.id}" /></td>
+                                    <td><img src="${pageContext.request.contextPath}/${product.pathToPicture}"
+                                             width="100px" height="100px" alt="${product.pathToPicture}"/></td>
+                                    <td><c:out value="${product.id}"/></td>
                                     <%--                <td><c:out value="${product.languageId}" /></td>--%>
-                                    <c:forEach var = "category" items="${categories}">
+                                    <c:forEach var="category" items="${categories}">
                                         <c:if test="${category.id == product.categoryId}">
-                                            <td><c:out value="${category.name}" /></td>
+                                            <td><c:out value="${category.name}"/></td>
                                         </c:if>
                                     </c:forEach>
-                                    <td><c:out value="${product.name}" /></td>
-                                    <td><c:out value="${product.description}" /></td>
-                                    <td><c:out value="${product.price}" /></td>
+                                    <td><c:out value="${product.name}"/></td>
+                                    <td><c:out value="${product.description}"/></td>
+                                    <td><c:out value="${product.price}"/></td>
                                     <td>
                                         <a href="/teashop/admin/products/edit?id=<c:out value='${product.id}' />">Edit</a>
                                         &nbsp;&nbsp;&nbsp;&nbsp;

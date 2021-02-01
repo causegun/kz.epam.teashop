@@ -15,10 +15,10 @@ public final class ConnectionPool {
     private static ConnectionPool obj = null;
     private BlockingQueue<Connection> connectionQueue;
     private BlockingQueue<Connection> givenAwayConQueue;
-    private String driverName;
-    private String url;
-    private String user;
-    private String password;
+    private final String driverName;
+    private final String url;
+    private final String user;
+    private final String password;
     private int poolSize;
 
     private ConnectionPool() {
@@ -52,8 +52,8 @@ public final class ConnectionPool {
         Locale.setDefault(Locale.ENGLISH);
         try {
             Class.forName(driverName);
-            givenAwayConQueue = new ArrayBlockingQueue<Connection>(poolSize);
-            connectionQueue = new ArrayBlockingQueue<Connection>(poolSize);
+            givenAwayConQueue = new ArrayBlockingQueue<>(poolSize);
+            connectionQueue = new ArrayBlockingQueue<>(poolSize);
             for (int i = 0; i < poolSize; i++) {
                 Connection connection = DriverManager.getConnection(url, user, password);
                 PooledConnection pooledConnection = new PooledConnection(connection);
@@ -79,7 +79,7 @@ public final class ConnectionPool {
         }
     }
     public Connection takeConnection() throws ConnectionPoolException {
-        Connection connection = null;
+        Connection connection;
         try {
             connection = connectionQueue.take();
             givenAwayConQueue.add(connection);
@@ -91,8 +91,8 @@ public final class ConnectionPool {
     }
     public void closeConnection(Connection con, Statement st, ResultSet rs) {
         try {
-            connectionQueue.add(con);
-            givenAwayConQueue.remove(con);
+//            connectionQueue.add(con);
+//            givenAwayConQueue.remove(con);
             con.close();
         } catch (SQLException e) {
             logger.error("Connection isn't return to the pool. Message: " + e.getMessage());
@@ -131,7 +131,7 @@ public final class ConnectionPool {
         }
     }
     private class PooledConnection implements Connection {
-        private Connection connection;
+        private final Connection connection;
         public PooledConnection(Connection c) throws SQLException {
             this.connection = c;
             this.connection.setAutoCommit(true);

@@ -48,14 +48,14 @@
                         <li><a href="/teashop">Main</a></li>
                         <li><a href="/teashop/categoryList">Shop</a>
                         <li><a href="/teashop/cart">Cart</a></li>
-                        <li><p> </p> </li>
-                        <li><a href="login">Login</a></li>
-                        <li><a href = "register">Register</a></li>
-                        <li><p> </p> </li>
-                        <li><a href="language?id=1">English</a></li>
-                        <li><a href="language?id=2">Русский</a></li>
-                        <li><p> </p> </li>
-                        <li><a href="admin/login">Admin Page</a></li>
+                        <li><p></p></li>
+                        <li><a href="/teashop/login">Login</a></li>
+                        <li><a href="/teashop/register">Register</a></li>
+                        <li><p></p></li>
+                        <li><a href="/teashop/language?id=1">English</a></li>
+                        <li><a href="/teashop/language?id=2">Русский</a></li>
+                        <li><p></p></li>
+                        <li><a href="/teashop/admin/login">Admin Page</a></li>
                     </c:otherwise>
                 </c:choose>
             </ul>

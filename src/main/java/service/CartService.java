@@ -4,6 +4,7 @@ import dao.factory.DaoFactory;
 import entity.Cart;
 import entity.CartItem;
 import entity.Language;
+import entity.Product;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.List;
@@ -60,7 +62,10 @@ public class CartService implements Service{
         } else {
             List<CartItem> cartItems = DaoFactory.getCartItemDao().getByCartId(cart.getId());
             for (CartItem cartItem: cartItems) {
-                cartItem.setProductName(DaoFactory.getProductDao().get(cartItem.getProductId()).getName());
+                Product product;
+                product = DaoFactory.getProductDao().get(cartItem.getProductId());
+                cartItem.setProductName(product.getName());
+                cartItem.setPrice(product.getPrice());
             }
             request.setAttribute("cartItems", cartItems);
             RequestDispatcher dispatcher = request.getRequestDispatcher("/cart.jsp");
@@ -93,8 +98,12 @@ public class CartService implements Service{
     public void deleteCartItem(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         long id = Long.parseLong(request.getParameter("id"));
-        CartItem cartItem = new CartItem();
-        cartItem.setId(id);
+        CartItem cartItem = DaoFactory.getCartItemDao().get(id);
+        HttpSession session = request.getSession();
+        Cart cart = (Cart) session.getAttribute("cart");
+        Product product = DaoFactory.getProductDao().get(cartItem.getProductId());
+        BigDecimal totalPrice = cart.getTotalPrice();
+        cart.setTotalPrice(totalPrice.subtract(product.getPrice().multiply(new BigDecimal(cartItem.getQuantity()))));
         DaoFactory.getCartItemDao().delete(cartItem);
         response.sendRedirect("/teashop/cart");
     }

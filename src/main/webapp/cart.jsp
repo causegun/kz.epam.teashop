@@ -47,47 +47,61 @@
                     <tr>
                         <th>Товар</th>
                         <th>Количество</th>
+                        <th>Цена</th>
                         <th>Действия</th>
                     </tr>
                     <c:forEach var="cartItem" items="${cartItems}">
                         <tr>
-                        <td><c:out value="${cartItem.productName}"/></td>
-                        <td><c:out value="${cartItem.quantity}"/></td>
-                        <td>
-                            <a >Редактировать</a>
-                            &nbsp;&nbsp;&nbsp;&nbsp;
-                            <a href="/teashop/cart/delete?id=<c:out value='${cartItem.id}' />" onclick="return confirm('Удалить товар из корзины?')">Удалить</a>
-                        </td>
+                            <td><c:out value="${cartItem.productName}"/></td>
+                            <td><c:out value="${cartItem.quantity}"/></td>
+                            <td><c:out value="${cartItem.price}"/></td>
+                            <td>
+                                <a>Редактировать</a>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <a href="/teashop/cart/delete?id=<c:out value='${cartItem.id}' />"
+                                   onclick="return confirm('Удалить товар из корзины?')">Удалить</a>
+                            </td>
                         </tr>
                     </c:forEach>
+                    <tr align="right">
+                        <td>Итого: <c:out value="${cart.totalPrice}"/></td>
+                    </tr>
                 </table>
                     <br><a href="/teashop/cart/order" class="button">Оформить заказ</a>
                     &nbsp;&nbsp;&nbsp;
-                    <a href="/teashop/cart/deleteCart" onclick="return confirm('Удалить корзину?')" class="button">Удалить Корзину</a>
-                    </c:when>
+                    <a href="/teashop/cart/deleteCart" onclick="return confirm('Удалить корзину?')" class="button">Удалить
+                        Корзину</a>
+                </c:when>
                     <c:otherwise>
                     <h2>Cart</h2>
                     <table border = "1" cellpadding="3">
                         <tr>
                             <th>Product</th>
                             <th>Quantity</th>
+                            <th>Price</th>
                             <th>Actions</th>
                         </tr>
                         <c:forEach var="cartItem" items="${cartItems}">
                             <tr>
-                            <td><c:out value="${cartItem.productName}"/></td>
-                            <td><c:out value="${cartItem.quantity}"/></td>
-                            <td>
-                                <a >Edit</a>
-                                &nbsp;&nbsp;&nbsp;&nbsp;
-                                <a href="/teashop/cart/delete?id=<c:out value='${cartItem.id}' />" onclick="return confirm('Delete product?')">Delete</a>
-                            </td>
+                                <td><c:out value="${cartItem.productName}"/></td>
+                                <td><c:out value="${cartItem.quantity}"/></td>
+                                <td><c:out value="${cartItem.price}"/></td>
+                                <td>
+                                    <a>Edit</a>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <a href="/teashop/cart/delete?id=<c:out value='${cartItem.id}' />"
+                                       onclick="return confirm('Delete product?')">Delete</a>
+                                </td>
                             </tr>
                         </c:forEach>
+                        <tr align="right">
+                            <td>Total price: <c:out value="${cart.totalPrice}"/></td>
+                        </tr>
                     </table>
                         <br><a href="/teashop/cart/order" class="button">Make Order</a>
                         &nbsp;&nbsp;&nbsp;
-                        <a href="/teashop/cart/deleteCart" onclick="return confirm('Delete the cart?')" class="button">Delete the Cart</a>
+                        <a href="/teashop/cart/deleteCart" onclick="return confirm('Delete the cart?')" class="button">Delete
+                            the Cart</a>
                     </c:otherwise>
                     </c:choose>
 

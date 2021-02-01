@@ -1,8 +1,6 @@
 package service;
 
-import connection.ConnectionPool;
 import dao.factory.DaoFactory;
-import dao.impl.UserDaoImpl;
 import entity.User;
 import org.apache.log4j.Logger;
 

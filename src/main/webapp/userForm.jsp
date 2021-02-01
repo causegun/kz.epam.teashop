@@ -139,9 +139,9 @@
                                         </tr>
                                     </c:if>
                                     <tr>
-                                        <th>Тел. номер: </th>
+                                        <th>Тел. номер:</th>
                                         <td>
-                                            <input type="tel" name="phoneNumber" size="45"
+                                            <input type="text" name="phoneNumber" size="45"
                                                    pattern="[0-9]{11,11}"
                                                    value="<c:out value='${user.phoneNumber}'/>" required/><br/>
                                             <small>Формат: 87771112233</small>
@@ -233,9 +233,9 @@
                                         </tr>
                                     </c:if>
                                     <tr>
-                                        <th>Phone Number: </th>
+                                        <th>Phone Number:</th>
                                         <td>
-                                            <input type="tel" name="phoneNumber" size="45"
+                                            <input type="text" name="phoneNumber" size="45"
                                                    pattern="[0-9]{11,11}"
                                                    value="<c:out value='${user.phoneNumber}'/>" required/><br/>
                                             <small>Format: 87771112233</small>

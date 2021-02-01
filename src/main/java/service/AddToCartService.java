@@ -53,7 +53,7 @@ public class AddToCartService implements Service{
         DaoFactory.getCartItemDao().insert(cartItem);
 
         Language language = (Language) session.getAttribute("language");
-        String addMessage = "Added " + quantity + " " + product.getName() + " to cart";
+        String addMessage = "";
         if (language == null || language.getName().equals("en"))
             addMessage = "Added " + quantity + " " + product.getName() + " to cart";
         else if (language.getName().equals("ru"))

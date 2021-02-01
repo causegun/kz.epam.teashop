@@ -1,6 +1,8 @@
 package entity;
 
-public class CartItem extends Entity{
+import java.math.BigDecimal;
+
+public class CartItem extends Entity {
 
     private long id;
     private long productId;
@@ -8,6 +10,7 @@ public class CartItem extends Entity{
     private String createdAt;
     private int quantity;
     private String productName;
+    private BigDecimal price;
 
     public CartItem() {
     }
@@ -73,5 +76,13 @@ public class CartItem extends Entity{
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 }

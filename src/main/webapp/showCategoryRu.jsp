@@ -47,14 +47,14 @@
                         <li><a href="/teashop">Main</a></li>
                         <li><a href="/teashop/categoryList">Shop</a>
                         <li><a href="/teashop/cart">Cart</a></li>
-                        <li><p> </p> </li>
-                        <li><a href="login">Login</a></li>
-                        <li><a href = "register">Register</a></li>
-                        <li><p> </p> </li>
-                        <li><a href="language?id=1">English</a></li>
-                        <li><a href="language?id=2">Русский</a></li>
-                        <li><p> </p> </li>
-                        <li><a href="admin/login">Admin Page</a></li>
+                        <li><p></p></li>
+                        <li><a href="/teashop/login">Login</a></li>
+                        <li><a href="/teashop/register">Register</a></li>
+                        <li><p></p></li>
+                        <li><a href="/teashop/language?id=1">English</a></li>
+                        <li><a href="/teashop/language?id=2">Русский</a></li>
+                        <li><p></p></li>
+                        <li><a href="/teashop/admin/login">Admin Page</a></li>
                     </c:otherwise>
                 </c:choose>
             </ul>
@@ -65,15 +65,15 @@
                     <h2>Категории</h2>
                     <div align="center">
                         <h2>
-                            <a href="/teashop/admin/products/new">Добавить новую категорию</a>
+                            <a href="/teashop/admin/categories/new">Добавить новую категорию</a>
                             &nbsp;&nbsp;
-                            <a href="/teashop/admin/products">Показать категории (en)</a>
+                            <a href="/teashop/admin/categories">Показать категории (en)</a>
                             &nbsp;&nbsp;
-                            <a href="/teashop/admin/products/ru">Показать категории (ru)</a>
+                            <a href="/teashop/admin/categories/ru">Показать категории (ru)</a>
                         </h2>
                     </div>
                     <div align="center">
-                        <table border = "1" cellpadding="3">
+                        <table border="1" cellpadding="3">
                             <tr>
                                 <th>ID</th>
                                 <th>Имя категории</th>
@@ -99,15 +99,15 @@
                     <h2>Category List</h2>
                     <div align="center">
                         <h2>
-                            <a href="/teashop/admin/products/new">Add new Category</a>
+                            <a href="/teashop/admin/categories/new">Add new Category</a>
                             &nbsp;&nbsp;
-                            <a href="/teashop/admin/products">Show Categories (en)</a>
+                            <a href="/teashop/admin/categories">Show Categories (en)</a>
                             &nbsp;&nbsp;
-                            <a href="/teashop/admin/products/ru">Show Categories (ru)</a>
+                            <a href="/teashop/admin/categories/ru">Show Categories (ru)</a>
                         </h2>
                     </div>
                     <div align="center">
-                        <table border = "1" cellpadding="3">
+                        <table border="1" cellpadding="3">
                             <tr>
                                 <th>ID</th>
                                 <th>Category Name</th>

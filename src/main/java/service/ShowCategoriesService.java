@@ -3,6 +3,7 @@ package service;
 import dao.factory.DaoFactory;
 import entity.Category;
 import entity.Language;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -98,6 +99,7 @@ public class ShowCategoriesService implements Service{
         List<Language> languages = DaoFactory.getLanguageDao().getAll();
         RequestDispatcher dispatcher = request.getRequestDispatcher("/categoryForm.jsp");
         request.setAttribute("languages", languages);
+        request.setAttribute("category", category);
         dispatcher.forward(request, response);
 
     }
