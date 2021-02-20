@@ -1,9 +1,9 @@
 package service;
 
+import dao.CategoryDao;
 import dao.factory.DaoFactory;
 import entity.Category;
 import entity.Language;
-import entity.Product;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -18,11 +18,17 @@ import java.util.List;
 public class CategoryListService implements Service{
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException, SQLException {
-        List<Category> categories = DaoFactory.getCategoryDao().getAll();
         HttpSession session = request.getSession();
         Language language = (Language) session.getAttribute("language");
+        List<Category> categories;
+        CategoryDao categoryDao = DaoFactory.getCategoryDao();
+
+        if(language == null)
+            categories = categoryDao.getByLanguage(1);
+        else
+            categories = categoryDao.getByLanguage(language.getId());
+
         request.setAttribute("categories", categories);
-        request.setAttribute("language", language);
         RequestDispatcher dispatcher = request.getRequestDispatcher("/categoryList.jsp");
         dispatcher.forward(request, response);
     }

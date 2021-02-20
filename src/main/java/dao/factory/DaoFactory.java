@@ -5,22 +5,14 @@ import dao.*;
 import dao.impl.*;
 
 public class DaoFactory {
-
     private static DaoFactory instance;
-
-    private static ConnectionPool connectionPool = ConnectionPool.getInstance();
-
-    private static UserDao userDao = new UserDaoImpl();
-
-    private static ProductDao productDao = new ProductDaoImpl();
-
-    private static LanguageDao languageDao = new LanguageDaoImpl();
-
-    private static CategoryDao categoryDao = new CategoryDaoImpl();
-
-    private static CartItemDao cartItemDao = new CartItemDaoImpl();
-
-    private static CartDao cartDao = new CartDaoImpl();
+    private static final ConnectionPool connectionPool = ConnectionPool.getInstance();
+    private static final UserDao userDao = new UserDaoImpl();
+    private static final ProductDao productDao = new ProductDaoImpl();
+    private static final LanguageDao languageDao = new LanguageDaoImpl();
+    private static final CategoryDao categoryDao = new CategoryDaoImpl();
+    private static final CartItemDao cartItemDao = new CartItemDaoImpl();
+    private static final CartDao cartDao = new CartDaoImpl();
 
     public DaoFactory() {
     }

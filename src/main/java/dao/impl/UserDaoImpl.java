@@ -45,37 +45,53 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> getAll() {
-
         List<User> users = new ArrayList<>();
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
+
         try {
             connection = connectionPool.takeConnection();
             statement = connection.prepareStatement(SQL_SELECT_ALL_USERS);
             resultSet = statement.executeQuery();
+            long id;
+
             while (resultSet.next()) {
                 User user = new User();
-                user.setId(resultSet.getLong("id"));
-                user.setName(resultSet.getString("userName"));
-                user.setAdmin(resultSet.getBoolean("isAdmin"));
-                user.setEmail(resultSet.getString("email"));
-                user.setPhoneNumber(resultSet.getString("phoneNumber"));
+
+                id = resultSet.getLong("id");
+                setDataToUser(resultSet, id, user);
                 users.add(user);
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting Users from user_info database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
         }
         return users;
     }
 
+    private void setDataToUser(ResultSet resultSet, long id, User user) throws SQLException {
+        String userName;
+        boolean isAdmin;
+        String email;
+        String phoneNumber;
+        userName = resultSet.getString("userName");
+        isAdmin = resultSet.getBoolean("isAdmin");
+        email = resultSet.getString("email");
+        phoneNumber = resultSet.getString("phoneNumber");
+
+        user.setId(id);
+        user.setName(userName);
+        user.setAdmin(isAdmin);
+        user.setEmail(email);
+        user.setPhoneNumber(phoneNumber);
+    }
+
     @Override
     public User get(Long id) {
-
         User user = new User();
         Connection connection = null;
         PreparedStatement statement = null;
@@ -86,19 +102,15 @@ public class UserDaoImpl implements UserDao {
             statement = connection.prepareStatement(SQL_SELECT_USER_BY_ID);
             statement.setLong(1, id);
             resultSet = statement.executeQuery();
+
             if (resultSet.next()) {
-                user.setId(id);
-                user.setName(resultSet.getString("userName"));
-                user.setAdmin(resultSet.getBoolean("isAdmin"));
-                user.setEmail(resultSet.getString("email"));
-                user.setPassword(resultSet.getString("password"));
-                user.setPhoneNumber(resultSet.getString("phoneNumber"));
+                setDataToUser(resultSet, id, user);
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting User from user_info database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
         }
         return user;
@@ -108,21 +120,29 @@ public class UserDaoImpl implements UserDao {
     public void insert(User user) {
         Connection connection = null;
         PreparedStatement statement = null;
+
         try {
             connection = connectionPool.takeConnection();
             statement = connection.prepareStatement(SQL_INSERT_NEW_USER);
-            statement.setBoolean(1, user.isAdmin());
-            statement.setString(2, user.getName());
-            statement.setString(3, user.getEmail());
-            statement.setString(4, user.getPassword());
-            statement.setString(5, user.getPhoneNumber());
+
+            boolean isAdmin = user.isAdmin();
+            String name = user.getName();
+            String email = user.getEmail();
+            String password = user.getPassword();
+            String phoneNumber = user.getPhoneNumber();
+
+            statement.setBoolean(1, isAdmin);
+            statement.setString(2, name);
+            statement.setString(3, email);
+            statement.setString(4, password);
+            statement.setString(5, phoneNumber);
 
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
-            logger.error("Error while inserting User from user_info database . Message: " + e.getMessage());
+            logger.error("Error while inserting User to user_info database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
 
         }
@@ -137,17 +157,24 @@ public class UserDaoImpl implements UserDao {
         try {
             connection = connectionPool.takeConnection();
             statement = connection.prepareStatement(SQL_UPDATE_USER);
-            statement.setBoolean(1, user.isAdmin());
-            statement.setString(2, user.getName());
-            statement.setString(3, user.getEmail());
-            statement.setString(4, user.getPhoneNumber());
-            statement.setLong(5, user.getId());
+
+            long id = user.getId();
+            boolean isAdmin = user.isAdmin();
+            String name = user.getName();
+            String email = user.getEmail();
+            String phoneNumber = user.getPhoneNumber();
+
+            statement.setBoolean(1, isAdmin);
+            statement.setString(2, name);
+            statement.setString(3, email);
+            statement.setString(4, phoneNumber);
+            statement.setLong(5, id);
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while updating User in user_info database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
         }
     }
@@ -167,7 +194,7 @@ public class UserDaoImpl implements UserDao {
             logger.error("Error while deleting User from user_info database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
         }
     }
@@ -185,16 +212,24 @@ public class UserDaoImpl implements UserDao {
             statement.setString(2, password);
             resultSet = statement.executeQuery();
 
+            String userName;
+            String emailFromDB;
+
             if (resultSet.next()) {
                 user = new User();
-                user.setName(resultSet.getString("userName"));
-                user.setEmail(resultSet.getString("email"));
+
+                userName = resultSet.getString("userName");
+                emailFromDB = resultSet.getString("email");
+
+                user.setName(userName);
+                user.setEmail(emailFromDB);
             }
         } catch (SQLException | ConnectionPoolException e) {
             logger.error("Error while checking login of User in user_info database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null) connectionPool.closeConnection(connection, statement, resultSet);
+            if (connection != null && statement != null && resultSet != null)
+                connectionPool.closeConnection(connection, statement, resultSet);
         }
         return user;
     }
@@ -212,16 +247,23 @@ public class UserDaoImpl implements UserDao {
             statement.setString(2, password);
             resultSet = statement.executeQuery();
 
+            String userName;
+            String emailFromDB;
+
             if (resultSet.next()) {
                 user = new User();
-                user.setName(resultSet.getString("userName"));
-                user.setEmail(resultSet.getString("email"));
+
+                userName = resultSet.getString("userName");
+                emailFromDB = resultSet.getString("email");
+
+                user.setName(userName);
+                user.setEmail(emailFromDB);
             }
         } catch (SQLException | ConnectionPoolException e) {
             logger.error("Error while checking login of Admin in user_info database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
         }
         return user;
@@ -239,17 +281,24 @@ public class UserDaoImpl implements UserDao {
             statement.setString(1, email);
             resultSet = statement.executeQuery();
 
+            long id;
+            String userName;
+
             if (resultSet.next()) {
                 user = new User();
-                user.setId(resultSet.getLong("id"));
-                user.setName(resultSet.getString("userName"));
-                user.setEmail(resultSet.getString("email"));
+
+                id = resultSet.getLong("id");
+                userName = resultSet.getString("userName");
+
+                user.setId(id);
+                user.setName(userName);
+                user.setEmail(email);
             }
         } catch (SQLException | ConnectionPoolException e) {
             logger.error("Error while getting User by email from user_info database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
         }
         return user;

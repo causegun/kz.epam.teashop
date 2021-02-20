@@ -3,8 +3,10 @@ package dao.impl;
 import connection.ConnectionPool;
 import connection.ConnectionPoolException;
 import dao.CategoryDao;
+import dao.ProductDao;
 import dao.factory.DaoFactory;
 import entity.Category;
+import entity.Product;
 import org.apache.log4j.Logger;
 
 
@@ -23,6 +25,8 @@ public class CategoryDaoImpl implements CategoryDao {
 
     private static final String SQL_SELECT_CATEGORY_BY_ID = "SELECT * FROM category WHERE id = ?";
 
+    private static final String SQL_SELECT_CATEGORY_BY_LANGUAGE_ID = "SELECT * FROM category WHERE languageId = ?";
+
     private static final String SQL_INSERT_NEW_CATEGORY =
             "INSERT INTO category (languageId, categoryName) values (?, ?)";
 
@@ -31,38 +35,41 @@ public class CategoryDaoImpl implements CategoryDao {
     private static final String SQL_UPDATE_CATEGORY =
             "UPDATE category SET languageId = ?, categoryName = ? WHERE id = ? ";
 
-    private static final String SQL_SELECT_BY_CATEGORY_NAME =
-            "SELECT * FROM category WHERE categoryName = ?";
-
-
     ConnectionPool connectionPool = DaoFactory.getConnectionPool();
 
-
     @Override
-    public Category getByName(String categoryName) {
-        Category category = new Category();
+    public List<Category> getByLanguage(long languageId) {
+        List<Category> categories = new ArrayList<>();
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
+
         try {
             connection = connectionPool.takeConnection();
-            statement = connection.prepareStatement(SQL_SELECT_BY_CATEGORY_NAME);
-            statement.setString(1, categoryName);
+            statement = connection.prepareStatement(SQL_SELECT_CATEGORY_BY_LANGUAGE_ID);
+            statement.setLong(1, languageId);
             resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                category.setId(resultSet.getLong("id"));
-                category.setLanguageId(resultSet.getLong("languageId"));
+
+            long id;
+            String categoryName;
+
+            while (resultSet.next()) {
+                Category category = new Category();
+                id = resultSet.getLong("id");
+                categoryName = resultSet.getString("categoryName");
+                category.setId(id);
+                category.setLanguageId(languageId);
                 category.setName(categoryName);
-                category.setProducts(DaoFactory.getProductDao().getByCategory(category.getId()));
+                categories.add(category);
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting category from category database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
         }
-        return category;
+        return categories;
     }
 
     @Override
@@ -76,19 +83,33 @@ public class CategoryDaoImpl implements CategoryDao {
             connection = connectionPool.takeConnection();
             statement = connection.prepareStatement(SQL_SELECT_ALL_CATEGORIES);
             resultSet = statement.executeQuery();
+
+            long id;
+            long languageId;
+            String categoryName;
+            ProductDao productDao = DaoFactory.getProductDao();
+            List<Product> products;
+
             while (resultSet.next()) {
                 Category category = new Category();
-                category.setId(resultSet.getLong("id"));
-                category.setLanguageId(resultSet.getLong("languageId"));
-                category.setName(resultSet.getString("categoryName"));
-                category.setProducts(DaoFactory.getProductDao().getByCategory(category.getId()));
+                id = resultSet.getLong("id");
+                languageId = resultSet.getLong("languageId");
+                categoryName = resultSet.getString("categoryName");
+
+                category.setId(id);
+                category.setLanguageId(languageId);
+                category.setName(categoryName);
+
+                products = productDao.getByCategory(id);
+                category.setProducts(products);
+
                 categories.add(category);
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting categories from category database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
         }
         return categories;
@@ -106,17 +127,27 @@ public class CategoryDaoImpl implements CategoryDao {
             statement = connection.prepareStatement(SQL_SELECT_CATEGORY_BY_ID);
             statement.setLong(1, id);
             resultSet = statement.executeQuery();
+            ProductDao productDao = DaoFactory.getProductDao();
+            List<Product> products;
+
+            long languageId;
+            String categoryName;
+
             while (resultSet.next()) {
+                languageId = resultSet.getLong("languageId");
+                categoryName = resultSet.getString("categoryName");
+
                 category.setId(id);
-                category.setLanguageId(resultSet.getLong("languageId"));
-                category.setName(resultSet.getString("categoryName"));
-                category.setProducts(DaoFactory.getProductDao().getByCategory(category.getId()));
+                category.setLanguageId(languageId);
+                category.setName(categoryName);
+                products = productDao.getByCategory(id);
+                category.setProducts(products);
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting category by ID from category database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
         }
         return category;
@@ -126,17 +157,22 @@ public class CategoryDaoImpl implements CategoryDao {
     public void insert(Category category) {
         Connection connection = null;
         PreparedStatement statement = null;
+
         try {
             connection = connectionPool.takeConnection();
             statement = connection.prepareStatement(SQL_INSERT_NEW_CATEGORY);
-            statement.setLong(1, category.getLanguageId());
-            statement.setString(2, category.getName());
+
+            long languageId = category.getLanguageId();
+            String categoryName = category.getName();
+
+            statement.setLong(1, languageId);
+            statement.setString(2, categoryName);
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while inserting category to category database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
 
         }
@@ -146,17 +182,24 @@ public class CategoryDaoImpl implements CategoryDao {
     public void update(Category category) {
         Connection connection = null;
         PreparedStatement statement = null;
+
         try {
             connection = connectionPool.takeConnection();
             statement = connection.prepareStatement(SQL_UPDATE_CATEGORY);
-            statement.setLong(1, category.getLanguageId());
-            statement.setString(2, category.getName());
+
+            long languageId = category.getLanguageId();
+            String categoryName = category.getName();
+            long id = category.getId();
+
+            statement.setLong(1, languageId);
+            statement.setString(2, categoryName);
+            statement.setLong(3, id);
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while updating category in category database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
         }
     }
@@ -165,17 +208,20 @@ public class CategoryDaoImpl implements CategoryDao {
     public void delete(Category category) {
         Connection connection = null;
         PreparedStatement statement = null;
+
         try {
             connection = connectionPool.takeConnection();
             statement = connection.prepareStatement(SQL_DELETE_CATEGORY);
-            statement.setLong(1, category.getId());
+
+            long id = category.getId();
+            statement.setLong(1, id);
 
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while deleting category from category database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
         }
     }

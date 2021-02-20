@@ -19,7 +19,7 @@ public class TeashopController extends HttpServlet {
     private final static Logger logger = Logger.getLogger(ConnectionPool.class);
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String requestUri = req.getRequestURI().toLowerCase();
 
         Service currentService = serviceFactory.getService(requestUri);
@@ -30,10 +30,5 @@ public class TeashopController extends HttpServlet {
             logger.error("Error while executing service. Message: " + e.getMessage());
             System.out.println(e);
         }
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doGet(req, resp);
     }
 }

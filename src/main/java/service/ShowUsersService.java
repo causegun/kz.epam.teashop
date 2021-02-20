@@ -1,5 +1,6 @@
 package service;
 
+import dao.UserDao;
 import dao.factory.DaoFactory;
 import entity.User;
 import org.apache.log4j.Logger;
@@ -16,6 +17,8 @@ import java.text.ParseException;
 import java.util.List;
 
 public class ShowUsersService implements Service {
+
+    UserDao userDao = DaoFactory.getUserDao();
 
     private final static Logger logger = Logger.getLogger(ShowUsersService.class);
 
@@ -51,21 +54,22 @@ public class ShowUsersService implements Service {
         }
     }
 
-    public void listUser (HttpServletRequest request, HttpServletResponse response)
+    public void listUser(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
-        List<User> users = DaoFactory.getUserDao().getAll();
-        request.setAttribute("users",users);
+        List<User> users = userDao.getAll();
+        request.setAttribute("users", users);
+
         RequestDispatcher dispatcher = request.getRequestDispatcher("/showUser.jsp");
         dispatcher.forward(request, response);
     }
 
-    public void showNewForm (HttpServletRequest request, HttpServletResponse response)
+    public void showNewForm(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         RequestDispatcher dispatcher = request.getRequestDispatcher("/userForm.jsp");
         dispatcher.forward(request, response);
     }
 
-    public void insertUser (HttpServletRequest request, HttpServletResponse response)
+    public void insertUser(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         String name = request.getParameter("name");
         boolean isAdmin = Boolean.parseBoolean(request.getParameter("isAdmin"));
@@ -73,59 +77,49 @@ public class ShowUsersService implements Service {
         String userPassword = request.getParameter("password");
         String phoneNumber = request.getParameter("phoneNumber");
 
-        MessageDigest messageDigest = null;
-        try {
-            messageDigest = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            logger.error("Error while hashing password. Message: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        byte[] messageBytes = messageDigest.digest(userPassword.getBytes());
-        StringBuilder stringBuilder = new StringBuilder();
-        for (byte b: messageBytes) {
-            stringBuilder.append(String.format("%02X", b));
-        }
-        String hashedPassword = stringBuilder.toString();
-
+        String hashedPassword = LoginService.hashPassword(userPassword);
         User user = new User(isAdmin, name, email, hashedPassword, phoneNumber);
-        DaoFactory.getUserDao().insert(user);
+        userDao.insert(user);
+
         response.sendRedirect("/teashop/admin/users");
     }
 
-    public void deleteUser (HttpServletRequest request, HttpServletResponse response)
+    public void deleteUser(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
-        long id =  Long.parseLong(request.getParameter("id"));
+        long id = Long.parseLong(request.getParameter("id"));
         User user = new User();
         user.setId(id);
-        DaoFactory.getUserDao().delete(user);
+        userDao.delete(user);
+
         response.sendRedirect("/teashop/admin/users");
     }
 
-    public void showEditForm (HttpServletRequest request, HttpServletResponse response)
+    public void showEditForm(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
-        long id =  Long.parseLong(request.getParameter("id"));
-        User user = DaoFactory.getUserDao().get(id);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/userForm.jsp");
+        long id = Long.parseLong(request.getParameter("id"));
+        User user = userDao.get(id);
         request.setAttribute("user", user);
-        dispatcher.forward(request, response);
 
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/userForm.jsp");
+        dispatcher.forward(request, response);
     }
 
-    public void updateUser (HttpServletRequest request, HttpServletResponse response)
+    public void updateUser(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
-        long id =  Long.parseLong(request.getParameter("id"));
+        long id = Long.parseLong(request.getParameter("id"));
         String name = request.getParameter("name");
         boolean isAdmin = Boolean.parseBoolean(request.getParameter("isAdmin"));
         String email = request.getParameter("email");
         String phoneNumber = request.getParameter("phoneNumber");
+
         User user = new User();
         user.setId(id);
         user.setName(name);
         user.setAdmin(isAdmin);
         user.setEmail(email);
         user.setPhoneNumber(phoneNumber);
-        DaoFactory.getUserDao().update(user);
+        userDao.update(user);
+
         response.sendRedirect("/teashop/admin/users");
     }
 }

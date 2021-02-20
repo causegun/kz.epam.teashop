@@ -1,10 +1,13 @@
 package service;
 
+import dao.CartItemDao;
+import dao.ProductDao;
 import dao.factory.DaoFactory;
 import entity.Cart;
 import entity.CartItem;
 import entity.Language;
 import entity.Product;
+import org.apache.log4j.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -18,7 +21,9 @@ import java.text.ParseException;
 import java.util.List;
 
 
-public class CartService implements Service{
+public class CartService implements Service {
+    private final static Logger logger = Logger.getLogger(CartService.class);
+
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException, SQLException {
         String action = request.getServletPath();
@@ -42,69 +47,92 @@ public class CartService implements Service{
                     break;
             }
         } catch (SQLException ex) {
+            logger.error("Error in executing CartService. Message: " + ex.getMessage());
             throw new ServletException(ex);
         }
     }
 
-    public void listCartItems (HttpServletRequest request, HttpServletResponse response)
+    public void listCartItems(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         HttpSession session = request.getSession();
         Cart cart = (Cart) session.getAttribute("cart");
+
         if (cart == null) {
             Language language = (Language) session.getAttribute("language");
             String noCartMessage = "Buy something first!";
-            if (language == null || language.getName().equals("en"))
+            String languageName = null;
+            if (language != null)
+                languageName = language.getName();
+
+            if (languageName == null || languageName.equals("en"))
                 noCartMessage = "Buy something first!";
-            else if (language.getName().equals("ru"))
+            else if (languageName.equals("ru"))
                 noCartMessage = "Купите что-нибудь!";
+
             session.setAttribute("noCartMessage", noCartMessage);
             response.sendRedirect("/teashop/");
         } else {
-            List<CartItem> cartItems = DaoFactory.getCartItemDao().getByCartId(cart.getId());
-            for (CartItem cartItem: cartItems) {
-                Product product;
-                product = DaoFactory.getProductDao().get(cartItem.getProductId());
+            CartItemDao cartItemDao = DaoFactory.getCartItemDao();
+            ProductDao productDao = DaoFactory.getProductDao();
+            List<CartItem> cartItems = cartItemDao.getByCartId(cart.getId());
+            Product product;
+
+            for (CartItem cartItem : cartItems) {
+                product = productDao.get(cartItem.getProductId());
                 cartItem.setProductName(product.getName());
                 cartItem.setPrice(product.getPrice());
             }
+
             request.setAttribute("cartItems", cartItems);
+
             RequestDispatcher dispatcher = request.getRequestDispatcher("/cart.jsp");
             dispatcher.forward(request, response);
         }
     }
 
-    public void deleteCart (HttpServletRequest request, HttpServletResponse response)
+    public void deleteCart(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         HttpSession session = request.getSession();
         Cart cart = (Cart) session.getAttribute("cart");
         DaoFactory.getCartDao().delete(cart);
         session.removeAttribute("cart");
+
         response.sendRedirect("/teashop/categoryList");
     }
 
-    public void order (HttpServletRequest request, HttpServletResponse response)
+    public void order(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         HttpSession session = request.getSession();
         session.removeAttribute("cart");
+
         RequestDispatcher dispatcher = request.getRequestDispatcher("/order.jsp");
         dispatcher.forward(request, response);
     }
 
-    public void editCartItem (HttpServletRequest request, HttpServletResponse response)
+    public void editCartItem(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         // will be added soon
     }
 
     public void deleteCartItem(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
+        CartItemDao cartItemDao = DaoFactory.getCartItemDao();
+        ProductDao productDao = DaoFactory.getProductDao();
+
         long id = Long.parseLong(request.getParameter("id"));
-        CartItem cartItem = DaoFactory.getCartItemDao().get(id);
+        CartItem cartItem = cartItemDao.get(id);
+
         HttpSession session = request.getSession();
         Cart cart = (Cart) session.getAttribute("cart");
-        Product product = DaoFactory.getProductDao().get(cartItem.getProductId());
+
+        Product product = productDao.get(cartItem.getProductId());
+        BigDecimal productPrice = product.getPrice();
+        BigDecimal quantity = new BigDecimal(cartItem.getQuantity());
+        BigDecimal totalPriceOfDeletingProducts = productPrice.multiply(quantity);
         BigDecimal totalPrice = cart.getTotalPrice();
-        cart.setTotalPrice(totalPrice.subtract(product.getPrice().multiply(new BigDecimal(cartItem.getQuantity()))));
-        DaoFactory.getCartItemDao().delete(cartItem);
+        cart.setTotalPrice(totalPrice.subtract(totalPriceOfDeletingProducts));
+
+        cartItemDao.delete(cartItem);
         response.sendRedirect("/teashop/cart");
     }
 }

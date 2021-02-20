@@ -9,13 +9,12 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 
-public class LogoutService implements Service{
+public class LogoutService implements Service {
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException, SQLException {
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.removeAttribute("customerUser");
-
             RequestDispatcher dispatcher = request.getRequestDispatcher("login.jsp");
             dispatcher.forward(request, response);
         }

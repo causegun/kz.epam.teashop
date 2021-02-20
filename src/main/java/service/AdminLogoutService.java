@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 
-public class AdminLogoutService implements Service{
+public class AdminLogoutService implements Service {
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException, SQLException {
         HttpSession session = request.getSession(false);

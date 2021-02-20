@@ -8,12 +8,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class RegisterService implements Service{
+public class RegisterService implements Service {
 
     private final static Logger logger = Logger.getLogger(RegisterService.class);
 
@@ -22,28 +22,18 @@ public class RegisterService implements Service{
             throws ServletException, IOException, ParseException, SQLException {
 
 
-            String name = request.getParameter("name");
-            String email = request.getParameter("email");
-            String userPassword = request.getParameter("password");
-            MessageDigest messageDigest = null;
-            try {
-                messageDigest = MessageDigest.getInstance("MD5");
-            } catch (NoSuchAlgorithmException e) {
-                logger.error("Error while hashing password. Message: " + e.getMessage());
-                e.printStackTrace();
-            }
+        String name = request.getParameter("name");
+        String email = request.getParameter("email");
+        String userPassword = request.getParameter("password");
+        String phoneNumber = request.getParameter("phoneNumber");
+        String hashedPassword = null;
 
-            byte[] messageBytes = messageDigest.digest(userPassword.getBytes());
-            StringBuilder stringBuilder = new StringBuilder();
-            for (byte b: messageBytes) {
-                stringBuilder.append(String.format("%02X", b));
-            }
-            String hashedPassword = stringBuilder.toString();
+        if (userPassword != null)
+            hashedPassword = LoginService.hashPassword(userPassword);
 
-            String phoneNumber = request.getParameter("phoneNumber");
-            User user = new User(name, email, hashedPassword, phoneNumber);
-            DaoFactory.getUserDao().insert(user);
-            response.sendRedirect("/teashop/login");
+        User user = new User(name, email, hashedPassword, phoneNumber);
+        DaoFactory.getUserDao().insert(user);
+        response.sendRedirect("/teashop/login");
 
     }
 }

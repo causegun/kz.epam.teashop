@@ -1,5 +1,9 @@
 package service;
 
+import dao.CartDao;
+import dao.CartItemDao;
+import dao.ProductDao;
+import dao.UserDao;
 import dao.factory.DaoFactory;
 import entity.*;
 
@@ -15,50 +19,67 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 
-public class AddToCartService implements Service{
+public class AddToCartService implements Service {
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException, SQLException {
-        long productId =  Long.parseLong(request.getParameter("id"));
+
+        long productId = Long.parseLong(request.getParameter("id"));
         HttpSession session = request.getSession();
+        ProductDao productDao = DaoFactory.getProductDao();
+        UserDao userDao = DaoFactory.getUserDao();
+        CartDao cartDao = DaoFactory.getCartDao();
+        CartItemDao cartItemDao = DaoFactory.getCartItemDao();
+
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
         String createdAt = dtf.format(now);
+
         String quantityParameter = request.getParameter("quantity" + productId);
         int quantity = Integer.parseInt(quantityParameter);
+
         BigDecimal totalPrice;
-        Cart cart = (Cart) session.getAttribute("cart");
-        Product product = DaoFactory.getProductDao().get(productId);
+        Product product = productDao.get(productId);
         BigDecimal productPrice = product.getPrice();
-        totalPrice = new BigDecimal(quantity).multiply(productPrice);
+        BigDecimal quantityDecimal = new BigDecimal(quantity);
+        totalPrice = quantityDecimal.multiply(productPrice);
+
         User user = (User) session.getAttribute("customerUser");
-        User userWithId = DaoFactory.getUserDao().getByEmail(user.getEmail());
+        User userWithId = userDao.getByEmail(user.getEmail());
         long userId = userWithId.getId();
+
         long cartId;
+        Cart cart = (Cart) session.getAttribute("cart");
+
         if (cart == null) {
             cart = new Cart();
             cart.setUserId(userId);
             cart.setCreatedAt(createdAt);
             cart.setTotalPrice(totalPrice);
-            DaoFactory.getCartDao().insert(cart);
-            cartId = DaoFactory.getCartDao().getId(userId, createdAt);
+            cartDao.insert(cart);
+            cartId = cartDao.getId(userId, createdAt);
             cart.setId(cartId);
             session.setAttribute("cart", cart);
         } else {
             cart.setTotalPrice(cart.getTotalPrice().add(totalPrice));
-            DaoFactory.getCartDao().update(cart);
+            cartDao.update(cart);
             cartId = cart.getId();
         }
 
         CartItem cartItem = new CartItem(productId, cartId, createdAt, quantity);
-        DaoFactory.getCartItemDao().insert(cartItem);
+        cartItemDao.insert(cartItem);
 
         Language language = (Language) session.getAttribute("language");
         String addMessage = "";
-        if (language == null || language.getName().equals("en"))
+        String languageName = null;
+        if (language != null)
+            languageName = language.getName();
+
+        if (languageName == null || languageName.equals("en"))
             addMessage = "Added " + quantity + " " + product.getName() + " to cart";
-        else if (language.getName().equals("ru"))
+        else if (languageName.equals("ru"))
             addMessage = "Добавлено " + quantity + " " + product.getName() + " в корзину";
+
         session.setAttribute("addMessage", addMessage);
-        response.sendRedirect("/teashop/productList/category?id="+product.getCategoryId());
+        response.sendRedirect("/teashop/productList/category?id=" + product.getCategoryId());
     }
 }

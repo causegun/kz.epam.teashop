@@ -8,7 +8,7 @@ import java.io.IOException;
 public class AdminAuthenticationFilter implements Filter {
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
 
     }
 
@@ -20,12 +20,10 @@ public class AdminAuthenticationFilter implements Filter {
         HttpSession session = httpRequest.getSession(false);
 
         boolean isLoggedIn = (session != null && session.getAttribute("adminUser") != null);
-
         String loginURI = httpRequest.getContextPath() + "/admin/login";
-
-        boolean isLoginRequest = httpRequest.getRequestURI().equals(loginURI);
-
-        boolean isLoginPage = httpRequest.getRequestURI().endsWith("login.jsp");
+        String requestURI = httpRequest.getRequestURI();
+        boolean isLoginRequest = requestURI.equals(loginURI);
+        boolean isLoginPage = requestURI.endsWith("login.jsp");
 
         if (isLoggedIn && (isLoginRequest || isLoginPage)) {
             RequestDispatcher dispatcher = servletRequest.getRequestDispatcher("/adminHome.jsp");
@@ -37,7 +35,6 @@ public class AdminAuthenticationFilter implements Filter {
         } else {
             RequestDispatcher dispatcher = servletRequest.getRequestDispatcher("/adminLogin.jsp");
             dispatcher.forward(servletRequest, servletResponse);
-
         }
     }
 

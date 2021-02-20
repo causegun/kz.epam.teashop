@@ -14,7 +14,7 @@ public class ServiceFactory {
 
     static {
         SERVICE_MAP.put("/TEASHOP/LOGIN", new LoginService());
-        SERVICE_MAP.put("/TEASHOP/USER/HOME", new RegisterService());
+        SERVICE_MAP.put("/TEASHOP/HOME", new RegisterService());
         SERVICE_MAP.put("/TEASHOP/LOGOUT", new LogoutService());
         SERVICE_MAP.put("/TEASHOP/REGISTER", new RegisterPageService());
         SERVICE_MAP.put("/TEASHOP/CATEGORYLIST", new CategoryListService());
@@ -52,12 +52,12 @@ public class ServiceFactory {
     }
     public Service getService(String request) {
         Service service = SERVICE_MAP.get("/ERROR");
-
-        for (Map.Entry<String, Service> pair : SERVICE_MAP.entrySet()) {
-            if (request.equalsIgnoreCase(pair.getKey())) {
-                service = SERVICE_MAP.get(pair.getKey());
-            }
-        }
+        service  = SERVICE_MAP.get(request.toUpperCase());
+//        for (Map.Entry<String, Service> pair : SERVICE_MAP.entrySet()) {
+//            if (request.equalsIgnoreCase(pair.getKey())) {
+//                service = SERVICE_MAP.get(pair.getKey());
+//            }
+//        }
         return service;
     }
 

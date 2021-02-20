@@ -19,7 +19,6 @@ public class EncodingFilter implements Filter {
         servletRequest.setCharacterEncoding(CODE_ENCODING);
         servletResponse.setCharacterEncoding(CODE_ENCODING);
         filterChain.doFilter(servletRequest, servletResponse);
-
     }
 
     @Override

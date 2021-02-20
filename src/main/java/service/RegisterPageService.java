@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 
-public class RegisterPageService implements Service{
+public class RegisterPageService implements Service {
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException, SQLException {
         RequestDispatcher dispatcher = request.getRequestDispatcher("/registerForm.jsp");

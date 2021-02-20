@@ -16,7 +16,7 @@ import java.util.List;
 
 public class CartItemDaoImpl implements CartItemDao {
 
-    private final static Logger logger = Logger.getLogger(CategoryDaoImpl.class);
+    private final static Logger logger = Logger.getLogger(CartItemDaoImpl.class);
 
     private static final String SQL_SELECT_ALL_CART_ITEMS = "SELECT * FROM cart_item";
 
@@ -40,24 +40,24 @@ public class CartItemDaoImpl implements CartItemDao {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
+
         try {
             connection = connectionPool.takeConnection();
             statement = connection.prepareStatement(SQL_SELECT_ALL_CART_ITEMS);
             resultSet = statement.executeQuery();
+            long id;
+
             while (resultSet.next()) {
                 CartItem cartItem = new CartItem();
-                cartItem.setId(resultSet.getLong("id"));
-                cartItem.setProductId(resultSet.getLong("productId"));
-                cartItem.setCartId(resultSet.getLong("cartId"));
-                cartItem.setCreatedAt(resultSet.getString("createdAt"));
-                cartItem.setQuantity(resultSet.getInt("quantity"));
+                id = resultSet.getLong("id");
+                setDataToCartItems(id, cartItem, resultSet);
                 cartItems.add(cartItem);
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting cart items from cart_item database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
         }
         return cartItems;
@@ -74,41 +74,62 @@ public class CartItemDaoImpl implements CartItemDao {
             statement = connection.prepareStatement(SQL_SELECT_CART_ITEM);
             statement.setLong(1, id);
             resultSet = statement.executeQuery();
+
             while (resultSet.next()) {
-                cartItem.setId(resultSet.getLong("id"));
-                cartItem.setProductId(resultSet.getLong("productId"));
-                cartItem.setCartId(resultSet.getLong("cartId"));
-                cartItem.setCreatedAt(resultSet.getString("createdAt"));
-                cartItem.setQuantity(resultSet.getInt("quantity"));
+                setDataToCartItems(id, cartItem, resultSet);
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting cart item from cart_item database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
         }
         return cartItem;
 
     }
 
+    private void setDataToCartItems(long id, CartItem cartItem, ResultSet resultSet) throws SQLException {
+        long productId;
+        long cartId;
+        String createdAt;
+        int quantity;
+        productId = resultSet.getLong("productId");
+        cartId = resultSet.getLong("cartId");
+        createdAt = resultSet.getString("createdAt");
+        quantity = resultSet.getInt("quantity");
+
+        cartItem.setId(id);
+        cartItem.setProductId(productId);
+        cartItem.setCartId(cartId);
+        cartItem.setCreatedAt(createdAt);
+        cartItem.setQuantity(quantity);
+    }
+
     @Override
     public void insert(CartItem cartItem) {
         Connection connection = null;
         PreparedStatement statement = null;
+
         try {
             connection = connectionPool.takeConnection();
             statement = connection.prepareStatement(SQL_INSERT_NEW_CART_ITEM);
-            statement.setLong(1, cartItem.getProductId());
-            statement.setLong(2, cartItem.getCartId());
-            statement.setString(3, cartItem.getCreatedAt());
-            statement.setInt(4, cartItem.getQuantity());
+
+            long productId = cartItem.getProductId();
+            long cartId = cartItem.getCartId();
+            String createdAt = cartItem.getCreatedAt();
+            int quantity = cartItem.getQuantity();
+
+            statement.setLong(1, productId);
+            statement.setLong(2, cartId);
+            statement.setString(3, createdAt);
+            statement.setInt(4, quantity);
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while inserting cart item to cart_item database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
         }
     }
@@ -117,19 +138,26 @@ public class CartItemDaoImpl implements CartItemDao {
     public void update(CartItem cartItem) {
         Connection connection = null;
         PreparedStatement statement = null;
+
         try {
             connection = connectionPool.takeConnection();
             statement = connection.prepareStatement(SQL_UPDATE_CART_ITEM);
-            statement.setLong(1, cartItem.getProductId());
-            statement.setString(2, cartItem.getCreatedAt());
-            statement.setInt(3, cartItem.getQuantity());
-            statement.setLong(4, cartItem.getId());
+
+            long id = cartItem.getId();
+            long productId = cartItem.getProductId();
+            String createdAt = cartItem.getCreatedAt();
+            int quantity = cartItem.getQuantity();
+
+            statement.setLong(1, productId);
+            statement.setString(2, createdAt);
+            statement.setInt(3, quantity);
+            statement.setLong(4, id);
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while updating cart item in cart_item database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
         }
     }
@@ -138,16 +166,19 @@ public class CartItemDaoImpl implements CartItemDao {
     public void delete(CartItem cartItem) {
         Connection connection = null;
         PreparedStatement statement = null;
+
         try {
             connection = connectionPool.takeConnection();
             statement = connection.prepareStatement(SQL_DELETE_CART_ITEM);
-            statement.setLong(1, cartItem.getId());
+
+            long id = cartItem.getId();
+            statement.setLong(1, id);
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while deleting cart items from cart_item database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
         }
     }
@@ -158,25 +189,25 @@ public class CartItemDaoImpl implements CartItemDao {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
+
         try {
             connection = connectionPool.takeConnection();
             statement = connection.prepareStatement(SQL_SELECT_CART_ITEMS_BY_CART_ID);
             statement.setLong(1, cartId);
+            long id;
             resultSet = statement.executeQuery();
+
             while (resultSet.next()) {
                 CartItem cartItem = new CartItem();
-                cartItem.setId(resultSet.getLong("id"));
-                cartItem.setProductId(resultSet.getLong("productId"));
-                cartItem.setCartId(cartId);
-                cartItem.setCreatedAt(resultSet.getString("createdAt"));
-                cartItem.setQuantity(resultSet.getInt("quantity"));
+                id = resultSet.getLong("id");
+                setDataToCartItems(id, cartItem, resultSet);
                 cartItems.add(cartItem);
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting cart items by ID from cart_item database . Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
         }
         return cartItems;

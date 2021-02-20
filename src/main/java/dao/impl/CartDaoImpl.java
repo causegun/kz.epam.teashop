@@ -7,6 +7,7 @@ import dao.factory.DaoFactory;
 import entity.Cart;
 import org.apache.log4j.Logger;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,23 +37,24 @@ public class CartDaoImpl implements CartDao {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
+
         try {
             connection = connectionPool.takeConnection();
             statement = connection.prepareStatement(SQL_SELECT_ALL_CARTS);
             resultSet = statement.executeQuery();
+            long id;
+
             while (resultSet.next()) {
                 Cart cart = new Cart();
-                cart.setId(resultSet.getLong("id"));
-                cart.setUserId(resultSet.getLong("userId"));
-                cart.setCreatedAt(resultSet.getString("createdAt"));
-                cart.setTotalPrice(resultSet.getBigDecimal("totalPrice"));
+                id = resultSet.getLong("id");
+                setDataToCart(id, cart, resultSet);
                 carts.add(cart);
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting Carts from database. Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
         }
         return carts;
@@ -69,39 +71,60 @@ public class CartDaoImpl implements CartDao {
             connection = connectionPool.takeConnection();
             statement = connection.prepareStatement(SQL_SELECT_CART);
             statement.setLong(1, id);
+
             resultSet = statement.executeQuery();
+
             if (resultSet.next()) {
-                cart.setId(resultSet.getLong("id"));
-                cart.setUserId(resultSet.getLong("userId"));
-                cart.setCreatedAt(resultSet.getString("createdAt"));
-                cart.setTotalPrice(resultSet.getBigDecimal("totalPrice"));
+                setDataToCart(id, cart, resultSet);
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting Cart from database. Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
         }
         return cart;
+    }
+
+    private void setDataToCart(Long id, Cart cart, ResultSet resultSet) throws SQLException {
+        long userId;
+        String createdAt;
+        BigDecimal totalPrice;
+
+        userId = resultSet.getLong("userId");
+        createdAt = resultSet.getString("createdAt");
+        totalPrice = resultSet.getBigDecimal("totalPrice");
+
+        cart.setId(id);
+        cart.setUserId(userId);
+        cart.setCreatedAt(createdAt);
+        cart.setTotalPrice(totalPrice);
     }
 
     @Override
     public void insert(Cart cart) {
         Connection connection = null;
         PreparedStatement statement = null;
+
         try {
             connection = connectionPool.takeConnection();
             statement = connection.prepareStatement(SQL_INSERT_NEW_CART);
-            statement.setLong(1, cart.getUserId());
-            statement.setString(2, cart.getCreatedAt());
-            statement.setBigDecimal(3, cart.getTotalPrice());
+
+            long id = cart.getUserId();
+            String createdAt = cart.getCreatedAt();
+            BigDecimal totalPrice = cart.getTotalPrice();
+
+            statement.setLong(1, id);
+            statement.setString(2, createdAt);
+            statement.setBigDecimal(3, totalPrice);
+
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while inserting Cart to database. Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
         }
     }
@@ -110,18 +133,23 @@ public class CartDaoImpl implements CartDao {
     public void update(Cart cart) {
         Connection connection = null;
         PreparedStatement statement = null;
+
         try {
             connection = connectionPool.takeConnection();
             statement = connection.prepareStatement(SQL_UPDATE_CART);
-            statement.setString(1, cart.getCreatedAt());
-            statement.setBigDecimal(2, cart.getTotalPrice());
+
+            String createdAt = cart.getCreatedAt();
+            BigDecimal totalPrice = cart.getTotalPrice();
+
+            statement.setString(1, createdAt);
+            statement.setBigDecimal(2, totalPrice);
             statement.setLong(3, cart.getId());
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while updating Cart in database. Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
         }
     }
@@ -141,8 +169,10 @@ public class CartDaoImpl implements CartDao {
         try {
             connection = connectionPool.takeConnection();
             statement = connection.prepareStatement(SQL_GET_CART_ID);
+
             statement.setLong(1, userId);
             statement.setString(2, datetime);
+
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 cartId = resultSet.getLong("id");
@@ -151,7 +181,7 @@ public class CartDaoImpl implements CartDao {
             logger.error("Error while getting ID from cart database. Message: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            if (connection != null)
+            if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
         }
         return cartId;

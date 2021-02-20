@@ -7,20 +7,18 @@ import java.io.IOException;
 
 public class UserAuthenticationFilter implements Filter {
     private HttpServletRequest httpRequest;
+    private static final String[] loginRequiredURLs = {"/productList/addToCart", "/home", "/cart"};
 
-    private static final String[] loginRequiredURLs = {
-            "/productList/addToCart", "/user", "/cart"
-    };
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
 
     }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         httpRequest = (HttpServletRequest) servletRequest;
-
-        String path = httpRequest.getRequestURI().substring(httpRequest.getContextPath().length());
+        String requestURI = httpRequest.getRequestURI();
+        String path = requestURI.substring(httpRequest.getContextPath().length());
 
         if (path.startsWith("/admin/")) {
             filterChain.doFilter(servletRequest, servletResponse);
@@ -28,24 +26,21 @@ public class UserAuthenticationFilter implements Filter {
         }
 
         HttpSession session = httpRequest.getSession(false);
-
         boolean isLoggedIn = (session != null && session.getAttribute("customerUser") != null);
-
         String loginURI = httpRequest.getContextPath() + "/login";
-        boolean isLoginRequest = httpRequest.getRequestURI().equals(loginURI);
-        boolean isLoginPage = httpRequest.getRequestURI().endsWith("login.jsp");
+        boolean isLoginRequest = requestURI.equals(loginURI);
+        boolean isLoginPage = requestURI.endsWith("login.jsp");
 
         if (isLoggedIn && (isLoginRequest || isLoginPage)) {
-
-            httpRequest.getRequestDispatcher("/").forward(servletRequest, servletResponse);
+            RequestDispatcher dispatcher = httpRequest.getRequestDispatcher("/");
+            dispatcher.forward(servletRequest, servletResponse);
 
         } else if (!isLoggedIn && isLoginRequired()) {
-
             String loginPage = "/login.jsp";
             RequestDispatcher dispatcher = httpRequest.getRequestDispatcher(loginPage);
             dispatcher.forward(servletRequest, servletResponse);
-        } else {
 
+        } else {
             filterChain.doFilter(servletRequest, servletResponse);
         }
     }
@@ -59,7 +54,6 @@ public class UserAuthenticationFilter implements Filter {
                 return true;
             }
         }
-
         return false;
     }
 

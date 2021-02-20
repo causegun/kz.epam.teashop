@@ -1,66 +1,50 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<c:choose>
+    <c:when test="${language.name == null}">
+        <c:set var="currentLocale" value="en"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="currentLocale" value="${language.name}"/>
+    </c:otherwise>
+</c:choose>
+
+<fmt:setLocale value="${currentLocale}"/>
+<fmt:setBundle basename="messages"/>
+
+<html lang="${currentLocale}">
 <head>
     <meta charset="UTF-8">
-    <title>Teashop</title>
-    <link rel="stylesheet" type = "text/css" href="${pageContext.request.contextPath}/css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css"/>
+    <title><fmt:message key="title"/></title>
 </head>
 
 <body>
-<div id = "container">
-    <div id = "header">
-        <h1>Teashop</h1>
+<div id="container">
+    <div id="header">
+        <h1><fmt:message key="title"/></h1>
     </div>
     <div id="content">
         <div id="nav">
-            <h3>Navigation</h3>
+            <h3><fmt:message key="navigation"/></h3>
             <ul>
-                <c:choose>
-                    <c:when test="${language.id == 2}">
-                        <li><a href="/teashop/">Главная</a></li>
-                        <li> </li>
-                        <li><a href="/teashop/categoryList">Магазин</a>
-                        <li><a href="/teashop/cart">Корзина</a>
-                        <li> </li>
-                        <li><a href="/teashop/login">Войти</a></li>
-                        <li><a href = "/teashop/register">Зарегистрироваться</a></li>
-                        <li> </li>
-                        <li><a href="/teashop/language?id=1">English</a></li>
-                        <li><a href="/teashop/language?id=2">Русский</a></li>
-                        <li> </li>
-                        <li><a href="/teashop/admin/login">Вы админ?</a>
-                    </c:when>
-                    <c:otherwise>
-                        <li><a href="/teashop">Main</a></li>
-                        <li> </li>
-                        <li><a href="/teashop/categoryList">Shop</a>
-                        <li><a href="/teashop/cart">Cart</a>
-                        <li> </li>
-                        <li><a href="/teashop/login">Login</a></li>
-                        <li><a href = "/teashop/register">Register</a></li>
-                        <li> </li>
-                        <li><a href="/teashop/language?id=1">English</a></li>
-                        <li><a href="/teashop/language?id=2">Русский</a></li>
-                        <li> </li>
-                        <li><a href="/teashop/admin/login">Admin login</a></li>
-                    </c:otherwise>
-                </c:choose>
+                <li><a href="/teashop"><fmt:message key="main"/></a></li>
+                <li><a href="/teashop/categoryList"><fmt:message key="shop"/></a>
+                <li><a href="/teashop/cart"><fmt:message key="cart"/></a></li>
+                <li><p></p></li>
+                <li><a href="/teashop/login"><fmt:message key="login"/></a></li>
+                <li><a href="/teashop/register"><fmt:message key="register"/></a></li>
+                <li><p></p></li>
+                <li><a href="/teashop/language?id=1">English</a></li>
+                <li><a href="/teashop/language?id=2">Русский</a></li>
+                <li><p></p></li>
+                <li><a href="/teashop/admin/login"><fmt:message key="adminPage"/></a></li>
             </ul>
         </div>
         <div id="main">
-            <c:choose>
-                <c:when test="${language.id == 2}">
-                    <h2>Информация о заказе</h2>
-                    <p>Спасибо!</p>
-                    <p>(скоро будет больше функционала)</p>
-                </c:when>
-                <c:otherwise>
-                    <h2>Order Info</h2>
-                    <p>Thanks for purchasing!</p>
-                    <p>(more will be added soon)</p>
-                </c:otherwise>
-            </c:choose>
+            <h2><fmt:message key="order.info"/></h2>
+            <p><fmt:message key="order.message"/></p>
         </div>
     </div>
 </div>

@@ -1,5 +1,7 @@
 package service;
 
+import dao.CategoryDao;
+import dao.LanguageDao;
 import dao.factory.DaoFactory;
 import entity.Category;
 import entity.Language;
@@ -13,7 +15,10 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.List;
 
-public class ShowCategoriesService implements Service{
+public class ShowCategoriesService implements Service {
+    CategoryDao categoryDao = DaoFactory.getCategoryDao();
+    LanguageDao languageDao = DaoFactory.getLanguageDao();
+
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException, SQLException {
 
@@ -48,71 +53,78 @@ public class ShowCategoriesService implements Service{
         }
     }
 
-    public void listCategory (HttpServletRequest request, HttpServletResponse response)
+    public void listCategory(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
-        List<Category> categories = DaoFactory.getCategoryDao().getAll();
+        List<Category> categories = categoryDao.getAll();
         request.setAttribute("categories", categories);
+
         RequestDispatcher dispatcher = request.getRequestDispatcher("/showCategory.jsp");
         dispatcher.forward(request, response);
     }
 
-    public void listCategoryRu (HttpServletRequest request, HttpServletResponse response)
+    public void listCategoryRu(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
-        List<Category> categories = DaoFactory.getCategoryDao().getAll();
+        List<Category> categories = categoryDao.getAll();
         request.setAttribute("categories", categories);
+
         RequestDispatcher dispatcher = request.getRequestDispatcher("/showCategoryRu.jsp");
         dispatcher.forward(request, response);
     }
 
-    public void showNewForm (HttpServletRequest request, HttpServletResponse response)
+    public void showNewForm(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
-        List<Language> languages = DaoFactory.getLanguageDao().getAll();
-        List<Category> categories = DaoFactory.getCategoryDao().getAll();
+        List<Language> languages = languageDao.getAll();
+        List<Category> categories = categoryDao.getAll();
         request.setAttribute("languages", languages);
         request.setAttribute("categories", categories);
+
         RequestDispatcher dispatcher = request.getRequestDispatcher("/categoryForm.jsp");
         dispatcher.forward(request, response);
     }
 
-    public void insertCategory (HttpServletRequest request, HttpServletResponse response)
+    public void insertCategory(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
-            long languageId  =  Long.parseLong(request.getParameter("languageId"));
-            String categoryName = request.getParameter("name");
-            Category category = new Category(languageId, categoryName);
-            DaoFactory.getCategoryDao().insert(category);
-            response.sendRedirect("/teashop/admin/categories");
+        long languageId = Long.parseLong(request.getParameter("languageId"));
+        String categoryName = request.getParameter("name");
+        Category category = new Category(languageId, categoryName);
+        categoryDao.insert(category);
+
+        response.sendRedirect("/teashop/admin/categories");
     }
 
-    public void deleteCategory (HttpServletRequest request, HttpServletResponse response)
+    public void deleteCategory(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         long id = Long.parseLong(request.getParameter("id"));
         Category category = new Category();
         category.setId(id);
-        DaoFactory.getCategoryDao().delete(category);
+        categoryDao.delete(category);
+
         response.sendRedirect("/teashop/admin/categories");
     }
 
-    public void showEditForm (HttpServletRequest request, HttpServletResponse response)
+    public void showEditForm(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
-        long id =  Long.parseLong(request.getParameter("id"));
-        Category category = DaoFactory.getCategoryDao().get(id);
-        List<Language> languages = DaoFactory.getLanguageDao().getAll();
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/categoryForm.jsp");
+        long id = Long.parseLong(request.getParameter("id"));
+        Category category = categoryDao.get(id);
+        List<Language> languages = languageDao.getAll();
         request.setAttribute("languages", languages);
         request.setAttribute("category", category);
-        dispatcher.forward(request, response);
 
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/categoryForm.jsp");
+        dispatcher.forward(request, response);
     }
 
-    public void updateCategory (HttpServletRequest request, HttpServletResponse response)
+    public void updateCategory(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
-        long id =  Long.parseLong(request.getParameter("id"));
-        long languageId  =  Long.parseLong(request.getParameter("languageId"));
+        long id = Long.parseLong(request.getParameter("id"));
+        long languageId = Long.parseLong(request.getParameter("languageId"));
         String categoryName = request.getParameter("name");
+
         Category category = new Category();
         category.setId(id);
         category.setLanguageId(languageId);
         category.setName(categoryName);
+
         response.sendRedirect("/teashop/admin/categories");
     }
 }
