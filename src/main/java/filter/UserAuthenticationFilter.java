@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class UserAuthenticationFilter implements Filter {
     private HttpServletRequest httpRequest;
-    private static final String[] loginRequiredURLs = {"/productList/addToCart", "/home", "/cart"};
+    private static final String[] loginRequiredURLs = {"/productList/addToCart", "/cart"};
 
     @Override
     public void init(FilterConfig filterConfig) {

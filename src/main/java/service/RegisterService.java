@@ -1,39 +1,49 @@
 package service;
 
+import dao.UserDao;
 import dao.factory.DaoFactory;
 import entity.User;
-import org.apache.log4j.Logger;
+import exception.ConnectionPoolException;
+import exception.DAOException;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class RegisterService implements Service {
-
-    private final static Logger logger = Logger.getLogger(RegisterService.class);
+    UserDao userDao = DaoFactory.getUserDao();
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, ParseException, SQLException {
-
-
-        String name = request.getParameter("name");
+            throws ServletException, IOException, ParseException, SQLException, ConnectionPoolException, DAOException {
         String email = request.getParameter("email");
-        String userPassword = request.getParameter("password");
-        String phoneNumber = request.getParameter("phoneNumber");
-        String hashedPassword = null;
+        String pathIfNotValid = "/registerForm.jsp";
+        User existingUser = userDao.getByEmail(email);
 
-        if (userPassword != null)
-            hashedPassword = LoginService.hashPassword(userPassword);
+        if (existingUser != null) {
+            request.setAttribute("userExistMessage", "User already exist");
 
-        User user = new User(name, email, hashedPassword, phoneNumber);
-        DaoFactory.getUserDao().insert(user);
-        response.sendRedirect("/teashop/login");
+            RequestDispatcher dispatcher = request.getRequestDispatcher(pathIfNotValid);
+            dispatcher.forward(request, response);
+        } else {
 
+            String phoneNumber = request.getParameter("phoneNumber");
+            String userPassword = request.getParameter("password");
+
+
+            if (ServiceUtils.validateUser(email, phoneNumber, userPassword, request, response, pathIfNotValid)) {
+                String name = request.getParameter("name");
+                String hashedPassword = ServiceUtils.hashPassword(userPassword);
+
+                User user = new User(name, email, hashedPassword, phoneNumber);
+                DaoFactory.getUserDao().insert(user);
+
+                response.sendRedirect("/teashop/login");
+            }
+        }
     }
 }

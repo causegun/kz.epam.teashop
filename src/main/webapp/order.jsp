@@ -44,6 +44,8 @@
         </div>
         <div id="main">
             <h2><fmt:message key="order.info"/></h2>
+            <p><fmt:message key="order.createdAt"/>&nbsp; ${createdAt}</p>
+            <p><fmt:message key="order.totalPrice"/>&nbsp; ${totalPrice}</p>
             <p><fmt:message key="order.message"/></p>
         </div>
     </div>

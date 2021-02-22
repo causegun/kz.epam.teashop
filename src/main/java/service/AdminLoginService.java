@@ -3,6 +3,8 @@ package service;
 import dao.UserDao;
 import dao.factory.DaoFactory;
 import entity.User;
+import exception.ConnectionPoolException;
+import exception.DAOException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -17,14 +19,15 @@ public class AdminLoginService implements Service {
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, ParseException, SQLException {
+            throws ServletException, IOException, ParseException, SQLException, ConnectionPoolException, DAOException {
+
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String hashedPassword = null;
         UserDao userDao = DaoFactory.getUserDao();
 
         if (password != null) {
-            hashedPassword = LoginService.hashPassword(password);
+            hashedPassword = ServiceUtils.hashPassword(password);
         }
 
         User user = userDao.checkAdminLogin(email, hashedPassword);
@@ -35,8 +38,12 @@ public class AdminLoginService implements Service {
             session.setAttribute("customerUser", user);
             session.setAttribute("adminUser", user);
             destPage = "adminHome.jsp";
-        } else LoginService.setIfInvalidMessage(request, email, session);
-
+        } else if (email != null) {
+            String messageEn = "Invalid email or password";
+            String messageRu = "Неправильный эл.адрес или пароль";
+            String attribute = "message";
+            ServiceUtils.setIfInvalidMessage(messageEn, messageRu, attribute, request, session);
+        }
         RequestDispatcher dispatcher = request.getRequestDispatcher("/" + destPage);
         dispatcher.forward(request, response);
     }

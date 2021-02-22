@@ -106,7 +106,8 @@
                                 <th><fmt:message key="login.email"/></th>
                                 <td>
                                     <input type="email" name="email" size="45"
-                                           value="<c:out value='${user.email}' />" required/>
+                                           value="<c:out value='${user.email}' />" required/><br/>
+                                    <small>${invalidEmailMessage} &nbsp; ${userExistMessage}</small>
                                 </td>
                             </tr>
                             <c:if test="${user == null}">
@@ -114,7 +115,8 @@
                                     <th><fmt:message key="login.password"/></th>
                                     <td>
                                         <input type="text" name="password" size="45"
-                                               value="<c:out value='${user.password}' />" required/>
+                                               value="<c:out value='${user.password}' />" required/><br/>
+                                        <small>${invalidPasswordMessage}</small>
                                     </td>
                                 </tr>
                             </c:if>
@@ -124,7 +126,7 @@
                                     <input type="text" name="phoneNumber" size="45"
                                            pattern="[0-9]{11,11}"
                                            value="<c:out value='${user.phoneNumber}'/>" required/><br/>
-                                    <small><fmt:message key="format"/>: 87771112233</small>
+                                    <small>${invalidPhoneNumberMessage}</small>
                                 </td>
                             </tr>
                             <tr>

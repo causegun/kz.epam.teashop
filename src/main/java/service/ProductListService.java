@@ -3,6 +3,8 @@ package service;
 import dao.factory.DaoFactory;
 import entity.Language;
 import entity.Product;
+import exception.ConnectionPoolException;
+import exception.DAOException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -15,8 +17,11 @@ import java.text.ParseException;
 import java.util.List;
 
 public class ProductListService implements Service {
+
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException, SQLException {
+    public void execute(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException, ParseException, SQLException, ConnectionPoolException, DAOException {
+
         long id = Long.parseLong(request.getParameter("id"));
         List<Product> products = DaoFactory.getProductDao().getByCategory(id);
         HttpSession session = request.getSession();

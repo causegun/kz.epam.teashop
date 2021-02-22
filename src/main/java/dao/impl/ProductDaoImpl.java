@@ -1,10 +1,11 @@
 package dao.impl;
 
 import connection.ConnectionPool;
-import connection.ConnectionPoolException;
+import exception.ConnectionPoolException;
 import dao.ProductDao;
 import dao.factory.DaoFactory;
 import entity.Product;
+import exception.DAOException;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
@@ -41,7 +42,7 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
-    public List<Product> getByCategory(long categoryId) {
+    public List<Product> getByCategory(long categoryId) throws ConnectionPoolException, DAOException {
         List<Product> products = new ArrayList<>();
         Connection connection = null;
         PreparedStatement statement = null;
@@ -64,7 +65,7 @@ public class ProductDaoImpl implements ProductDao {
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting product by category from product database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error querying product from database. ", e);
         } finally {
             if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
@@ -73,7 +74,7 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
-    public List<Product> getAll() {
+    public List<Product> getAll() throws DAOException, ConnectionPoolException {
         List<Product> products = new ArrayList<>();
         Connection connection = null;
         PreparedStatement statement = null;
@@ -95,7 +96,7 @@ public class ProductDaoImpl implements ProductDao {
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting products from product database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error querying products from database. ", e);
         } finally {
             if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
@@ -104,7 +105,7 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
-    public Product get(Long id) {
+    public Product get(Long id) throws DAOException, ConnectionPoolException {
         Product product = new Product();
         Connection connection = null;
         PreparedStatement statement = null;
@@ -121,7 +122,7 @@ public class ProductDaoImpl implements ProductDao {
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting product from product database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error querying product from database. ", e);
         } finally {
             if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
@@ -154,7 +155,7 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
-    public void insert(Product product) {
+    public void insert(Product product) throws DAOException, ConnectionPoolException {
         Connection connection = null;
         PreparedStatement statement = null;
 
@@ -167,7 +168,7 @@ public class ProductDaoImpl implements ProductDao {
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while inserting product to product database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error inserting product to database. ", e);
         } finally {
             if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
@@ -199,7 +200,7 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
-    public void update(Product product) {
+    public void update(Product product) throws DAOException, ConnectionPoolException {
         Connection connection = null;
         PreparedStatement statement = null;
 
@@ -217,7 +218,7 @@ public class ProductDaoImpl implements ProductDao {
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while updating product in product database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error updating product in database. ", e);
         } finally {
             if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
@@ -226,7 +227,7 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
-    public void delete(Product product) {
+    public void delete(Product product) throws DAOException, ConnectionPoolException {
         Connection connection = null;
         PreparedStatement statement = null;
 
@@ -239,7 +240,7 @@ public class ProductDaoImpl implements ProductDao {
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while deleting product from product database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error deleting product from database. ", e);
         } finally {
             if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);

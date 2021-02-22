@@ -1,6 +1,8 @@
 package controller;
 
 import connection.ConnectionPool;
+import exception.ConnectionPoolException;
+import exception.DAOException;
 import org.apache.log4j.Logger;
 import service.Service;
 import service.factory.ServiceFactory;
@@ -26,9 +28,13 @@ public class TeashopController extends HttpServlet {
 
         try {
             currentService.execute(req, resp);
-        } catch (ParseException | SQLException e) {
+        } catch (SQLException | ParseException e) {
             logger.error("Error while executing service. Message: " + e.getMessage());
-            System.out.println(e);
+            e.printStackTrace();
+            throw new ServletException("Error while executing service. ", e);
+        } catch (DAOException | ConnectionPoolException e) {
+            e.printStackTrace();
+            throw new ServletException("Error while executing service. ", e);
         }
     }
 }

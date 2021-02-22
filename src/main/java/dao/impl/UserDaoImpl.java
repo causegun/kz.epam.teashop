@@ -1,10 +1,11 @@
 package dao.impl;
 
 import connection.ConnectionPool;
-import connection.ConnectionPoolException;
+import exception.ConnectionPoolException;
 import dao.UserDao;
 import dao.factory.DaoFactory;
 import entity.User;
+import exception.DAOException;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
@@ -44,7 +45,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<User> getAll() {
+    public List<User> getAll() throws DAOException, ConnectionPoolException {
         List<User> users = new ArrayList<>();
         Connection connection = null;
         PreparedStatement statement = null;
@@ -65,7 +66,7 @@ public class UserDaoImpl implements UserDao {
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting Users from user_info database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error querying users from database. ", e);
         } finally {
             if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
@@ -91,7 +92,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User get(Long id) {
+    public User get(Long id) throws DAOException, ConnectionPoolException {
         User user = new User();
         Connection connection = null;
         PreparedStatement statement = null;
@@ -108,7 +109,7 @@ public class UserDaoImpl implements UserDao {
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting User from user_info database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error querying user from database. ", e);
         } finally {
             if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
@@ -117,7 +118,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void insert(User user) {
+    public void insert(User user) throws DAOException, ConnectionPoolException {
         Connection connection = null;
         PreparedStatement statement = null;
 
@@ -140,7 +141,7 @@ public class UserDaoImpl implements UserDao {
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while inserting User to user_info database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error inserting user to database. ", e);
         } finally {
             if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
@@ -150,7 +151,7 @@ public class UserDaoImpl implements UserDao {
 
 
     @Override
-    public void update(User user) {
+    public void update(User user) throws DAOException, ConnectionPoolException {
         Connection connection = null;
         PreparedStatement statement = null;
 
@@ -172,7 +173,7 @@ public class UserDaoImpl implements UserDao {
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while updating User in user_info database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error updating user in database. ", e);
         } finally {
             if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
@@ -180,7 +181,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void delete(User user) {
+    public void delete(User user) throws DAOException, ConnectionPoolException {
         Connection connection = null;
         PreparedStatement statement = null;
         try {
@@ -192,7 +193,7 @@ public class UserDaoImpl implements UserDao {
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while deleting User from user_info database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error deleting user from database. ", e);
         } finally {
             if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
@@ -200,7 +201,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User checkLogin(String email, String password) {
+    public User checkLogin(String email, String password) throws DAOException, ConnectionPoolException {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -226,7 +227,7 @@ public class UserDaoImpl implements UserDao {
             }
         } catch (SQLException | ConnectionPoolException e) {
             logger.error("Error while checking login of User in user_info database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error checking user in database. ", e);
         } finally {
             if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
@@ -235,7 +236,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User checkAdminLogin(String email, String password) {
+    public User checkAdminLogin(String email, String password) throws DAOException, ConnectionPoolException {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -261,7 +262,7 @@ public class UserDaoImpl implements UserDao {
             }
         } catch (SQLException | ConnectionPoolException e) {
             logger.error("Error while checking login of Admin in user_info database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error checking admin in database. ", e);
         } finally {
             if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
@@ -270,7 +271,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User getByEmail(String email) {
+    public User getByEmail(String email) throws DAOException, ConnectionPoolException {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -296,7 +297,7 @@ public class UserDaoImpl implements UserDao {
             }
         } catch (SQLException | ConnectionPoolException e) {
             logger.error("Error while getting User by email from user_info database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error querying user from database. ", e);
         } finally {
             if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);

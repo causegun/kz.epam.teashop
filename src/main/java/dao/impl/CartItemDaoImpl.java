@@ -1,10 +1,11 @@
 package dao.impl;
 
 import connection.ConnectionPool;
-import connection.ConnectionPoolException;
+import exception.ConnectionPoolException;
 import dao.CartItemDao;
 import dao.factory.DaoFactory;
 import entity.CartItem;
+import exception.DAOException;
 import org.apache.log4j.Logger;
 
 import java.sql.Connection;
@@ -27,6 +28,8 @@ public class CartItemDaoImpl implements CartItemDao {
 
     private static final String SQL_DELETE_CART_ITEM = "DELETE FROM cart_item WHERE id = ?";
 
+    private static final String SQL_DELETE_CART_ITEMS_BY_CART_ID = "DELETE FROM cart_item WHERE cartId = ?";
+
     private static final String SQL_UPDATE_CART_ITEM =
             "UPDATE cart_item SET productId = ?, createdAt = ?, quantity = ? WHERE id = ?";
 
@@ -35,7 +38,7 @@ public class CartItemDaoImpl implements CartItemDao {
     ConnectionPool connectionPool = DaoFactory.getConnectionPool();
 
     @Override
-    public List<CartItem> getAll() {
+    public List<CartItem> getAll() throws DAOException, ConnectionPoolException {
         List<CartItem> cartItems = new ArrayList<>();
         Connection connection = null;
         PreparedStatement statement = null;
@@ -55,7 +58,7 @@ public class CartItemDaoImpl implements CartItemDao {
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting cart items from cart_item database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error querying cart items from database. ", e);
         } finally {
             if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
@@ -64,7 +67,7 @@ public class CartItemDaoImpl implements CartItemDao {
     }
 
     @Override
-    public CartItem get(Long id) {
+    public CartItem get(Long id) throws DAOException, ConnectionPoolException {
         CartItem cartItem = new CartItem();
         Connection connection = null;
         PreparedStatement statement = null;
@@ -80,7 +83,7 @@ public class CartItemDaoImpl implements CartItemDao {
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting cart item from cart_item database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error querying cart item from database. ", e);
         } finally {
             if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
@@ -107,7 +110,7 @@ public class CartItemDaoImpl implements CartItemDao {
     }
 
     @Override
-    public void insert(CartItem cartItem) {
+    public void insert(CartItem cartItem) throws DAOException, ConnectionPoolException {
         Connection connection = null;
         PreparedStatement statement = null;
 
@@ -127,7 +130,7 @@ public class CartItemDaoImpl implements CartItemDao {
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while inserting cart item to cart_item database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error inserting cart item from database. ", e);
         } finally {
             if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
@@ -135,7 +138,7 @@ public class CartItemDaoImpl implements CartItemDao {
     }
 
     @Override
-    public void update(CartItem cartItem) {
+    public void update(CartItem cartItem) throws ConnectionPoolException, DAOException {
         Connection connection = null;
         PreparedStatement statement = null;
 
@@ -155,7 +158,7 @@ public class CartItemDaoImpl implements CartItemDao {
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while updating cart item in cart_item database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error updating cart item from database. ", e);
         } finally {
             if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
@@ -163,7 +166,7 @@ public class CartItemDaoImpl implements CartItemDao {
     }
 
     @Override
-    public void delete(CartItem cartItem) {
+    public void delete(CartItem cartItem) throws ConnectionPoolException, DAOException {
         Connection connection = null;
         PreparedStatement statement = null;
 
@@ -175,8 +178,26 @@ public class CartItemDaoImpl implements CartItemDao {
             statement.setLong(1, id);
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
+            logger.error("Error while deleting cart item from cart_item database . Message: " + e.getMessage());
+            throw new DAOException("Error deleting cart item from database. ", e);
+        } finally {
+            if (connection != null && statement != null)
+                connectionPool.closeConnection(connection, statement);
+        }
+    }
+
+    public void deleteByCartId(long cartId) throws ConnectionPoolException, DAOException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            connection = connectionPool.takeConnection();
+            statement = connection.prepareStatement(SQL_DELETE_CART_ITEMS_BY_CART_ID);
+            statement.setLong(1, cartId);
+            statement.executeUpdate();
+        } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while deleting cart items from cart_item database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error deleting cart item from database. ", e);
         } finally {
             if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
@@ -184,7 +205,7 @@ public class CartItemDaoImpl implements CartItemDao {
     }
 
     @Override
-    public List<CartItem> getByCartId(long cartId) {
+    public List<CartItem> getByCartId(long cartId) throws ConnectionPoolException, DAOException {
         List<CartItem> cartItems = new ArrayList<>();
         Connection connection = null;
         PreparedStatement statement = null;
@@ -205,7 +226,7 @@ public class CartItemDaoImpl implements CartItemDao {
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting cart items by ID from cart_item database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error querying cart item from database. ", e);
         } finally {
             if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);

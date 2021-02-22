@@ -1,10 +1,11 @@
 package dao.impl;
 
 import connection.ConnectionPool;
-import connection.ConnectionPoolException;
+import exception.ConnectionPoolException;
 import dao.LanguageDao;
 import dao.factory.DaoFactory;
 import entity.Language;
+import exception.DAOException;
 import org.apache.log4j.Logger;
 
 
@@ -30,7 +31,7 @@ public class LanguageDaoImpl implements LanguageDao {
     ConnectionPool connectionPool = DaoFactory.getConnectionPool();
 
     @Override
-    public List<Language> getAll() {
+    public List<Language> getAll() throws ConnectionPoolException, DAOException {
         List<Language> languages = new ArrayList<>();
         Connection connection = null;
         PreparedStatement statement = null;
@@ -55,7 +56,7 @@ public class LanguageDaoImpl implements LanguageDao {
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting languages from language_info database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error querying languages from database. ", e);
         } finally {
             if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
@@ -64,7 +65,7 @@ public class LanguageDaoImpl implements LanguageDao {
     }
 
     @Override
-    public Language get(Long id) {
+    public Language get(Long id) throws DAOException, ConnectionPoolException {
         Language language = new Language();
         Connection connection = null;
         PreparedStatement statement = null;
@@ -83,7 +84,7 @@ public class LanguageDaoImpl implements LanguageDao {
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting language from language_info database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error querying language from database. ", e);
         } finally {
             if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
@@ -92,7 +93,7 @@ public class LanguageDaoImpl implements LanguageDao {
     }
 
     @Override
-    public void insert(Language language) {
+    public void insert(Language language) throws DAOException, ConnectionPoolException {
         Connection connection = null;
         PreparedStatement statement = null;
         try {
@@ -102,7 +103,7 @@ public class LanguageDaoImpl implements LanguageDao {
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while inserting language to language_info database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error inserting languages to database. ", e);
         } finally {
             if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
@@ -111,7 +112,7 @@ public class LanguageDaoImpl implements LanguageDao {
     }
 
     @Override
-    public void update(Language language) {
+    public void update(Language language) throws ConnectionPoolException, DAOException {
         Connection connection = null;
         PreparedStatement statement = null;
 
@@ -127,7 +128,7 @@ public class LanguageDaoImpl implements LanguageDao {
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while updating language in language_info database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error updating language in database. ", e);
         } finally {
             if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);

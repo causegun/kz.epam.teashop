@@ -1,12 +1,13 @@
 package dao.impl;
 
 import connection.ConnectionPool;
-import connection.ConnectionPoolException;
+import exception.ConnectionPoolException;
 import dao.CategoryDao;
 import dao.ProductDao;
 import dao.factory.DaoFactory;
 import entity.Category;
 import entity.Product;
+import exception.DAOException;
 import org.apache.log4j.Logger;
 
 
@@ -38,7 +39,7 @@ public class CategoryDaoImpl implements CategoryDao {
     ConnectionPool connectionPool = DaoFactory.getConnectionPool();
 
     @Override
-    public List<Category> getByLanguage(long languageId) {
+    public List<Category> getByLanguage(long languageId) throws ConnectionPoolException, DAOException {
         List<Category> categories = new ArrayList<>();
         Connection connection = null;
         PreparedStatement statement = null;
@@ -64,7 +65,7 @@ public class CategoryDaoImpl implements CategoryDao {
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting category from category database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error querying categories from database. ", e);
         } finally {
             if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
@@ -73,7 +74,7 @@ public class CategoryDaoImpl implements CategoryDao {
     }
 
     @Override
-    public List<Category> getAll() {
+    public List<Category> getAll() throws DAOException, ConnectionPoolException {
         List<Category> categories = new ArrayList<>();
         Connection connection = null;
         PreparedStatement statement = null;
@@ -107,7 +108,7 @@ public class CategoryDaoImpl implements CategoryDao {
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting categories from category database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error querying categories from database. ", e);
         } finally {
             if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
@@ -116,7 +117,7 @@ public class CategoryDaoImpl implements CategoryDao {
     }
 
     @Override
-    public Category get(Long id) {
+    public Category get(Long id) throws DAOException, ConnectionPoolException {
         Category category = new Category();
         Connection connection = null;
         PreparedStatement statement = null;
@@ -145,7 +146,7 @@ public class CategoryDaoImpl implements CategoryDao {
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting category by ID from category database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error querying cart items from database. ", e);
         } finally {
             if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
@@ -154,7 +155,7 @@ public class CategoryDaoImpl implements CategoryDao {
     }
 
     @Override
-    public void insert(Category category) {
+    public void insert(Category category) throws ConnectionPoolException, DAOException {
         Connection connection = null;
         PreparedStatement statement = null;
 
@@ -170,7 +171,7 @@ public class CategoryDaoImpl implements CategoryDao {
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while inserting category to category database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error querying categories from database. ", e);
         } finally {
             if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
@@ -179,7 +180,7 @@ public class CategoryDaoImpl implements CategoryDao {
     }
 
     @Override
-    public void update(Category category) {
+    public void update(Category category) throws ConnectionPoolException, DAOException {
         Connection connection = null;
         PreparedStatement statement = null;
 
@@ -197,7 +198,7 @@ public class CategoryDaoImpl implements CategoryDao {
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while updating category in category database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error querying categories from database. ", e);
         } finally {
             if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
@@ -205,7 +206,7 @@ public class CategoryDaoImpl implements CategoryDao {
     }
 
     @Override
-    public void delete(Category category) {
+    public void delete(Category category) throws ConnectionPoolException, DAOException {
         Connection connection = null;
         PreparedStatement statement = null;
 
@@ -219,7 +220,7 @@ public class CategoryDaoImpl implements CategoryDao {
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while deleting category from category database . Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error querying categories from database. ", e);
         } finally {
             if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);

@@ -5,6 +5,8 @@ import dao.LanguageDao;
 import dao.factory.DaoFactory;
 import entity.Category;
 import entity.Language;
+import exception.ConnectionPoolException;
+import exception.DAOException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -16,11 +18,13 @@ import java.text.ParseException;
 import java.util.List;
 
 public class ShowCategoriesService implements Service {
+
     CategoryDao categoryDao = DaoFactory.getCategoryDao();
     LanguageDao languageDao = DaoFactory.getLanguageDao();
 
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException, SQLException {
+    public void execute(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException, ParseException, SQLException {
 
         String action = request.getServletPath();
 
@@ -48,13 +52,14 @@ public class ShowCategoriesService implements Service {
                     listCategory(request, response);
                     break;
             }
-        } catch (SQLException ex) {
+        } catch (SQLException | ConnectionPoolException | DAOException ex) {
             throw new ServletException(ex);
         }
     }
 
     public void listCategory(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
+            throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
+
         List<Category> categories = categoryDao.getAll();
         request.setAttribute("categories", categories);
 
@@ -63,7 +68,8 @@ public class ShowCategoriesService implements Service {
     }
 
     public void listCategoryRu(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
+            throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
+
         List<Category> categories = categoryDao.getAll();
         request.setAttribute("categories", categories);
 
@@ -72,7 +78,8 @@ public class ShowCategoriesService implements Service {
     }
 
     public void showNewForm(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
+            throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
+
         List<Language> languages = languageDao.getAll();
         List<Category> categories = categoryDao.getAll();
         request.setAttribute("languages", languages);
@@ -83,7 +90,8 @@ public class ShowCategoriesService implements Service {
     }
 
     public void insertCategory(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
+            throws SQLException, IOException, ConnectionPoolException, DAOException {
+
         long languageId = Long.parseLong(request.getParameter("languageId"));
         String categoryName = request.getParameter("name");
         Category category = new Category(languageId, categoryName);
@@ -93,7 +101,8 @@ public class ShowCategoriesService implements Service {
     }
 
     public void deleteCategory(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
+            throws SQLException, IOException, ConnectionPoolException, DAOException {
+
         long id = Long.parseLong(request.getParameter("id"));
         Category category = new Category();
         category.setId(id);
@@ -103,7 +112,8 @@ public class ShowCategoriesService implements Service {
     }
 
     public void showEditForm(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
+            throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
+
         long id = Long.parseLong(request.getParameter("id"));
         Category category = categoryDao.get(id);
         List<Language> languages = languageDao.getAll();
@@ -115,7 +125,8 @@ public class ShowCategoriesService implements Service {
     }
 
     public void updateCategory(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
+            throws SQLException, IOException {
+
         long id = Long.parseLong(request.getParameter("id"));
         long languageId = Long.parseLong(request.getParameter("languageId"));
         String categoryName = request.getParameter("name");

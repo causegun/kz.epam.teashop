@@ -44,10 +44,11 @@
         </div>
         <div id="main">
             <h2><fmt:message key="register"/></h2>
-            <form action="/teashop/home" method="post">
+            <form action="/teashop/user/home" method="post">
                 <fmt:message key="register.user"/><input type="text" name="name" required/><br/><br/>
-                <fmt:message key="login.email"/><input type="email" name="email" required/><br/><br/>
-                <fmt:message key="login.password"/><input type="password" id="password1" name="password" required/><br/><br/>
+                <fmt:message key="login.email"/><input type="email" name="email" required/>&nbsp; ${invalidEmailMessage} &nbsp; ${userExistMessage}
+                <br/><br/>
+                <fmt:message key="login.password"/><input type="password" id="password1" name="password" required/>&nbsp; ${invalidPasswordMessage}<br/><br/>
                 <fmt:message key="register.confirm"/><input type="password" id="password3" required/><br/><br/>
                 <script type="text/javascript">
                     window.onload = function () {
@@ -64,9 +65,9 @@
                             document.getElementById("password3").setCustomValidity('');
                     }
                 </script>
-                <fmt:message key="register.phone"/><input type="number" min="7000000000" max="9999999999"
-                                                          name="phoneNumber" required/><br/><br/>
-                <input type="submit" value="<fmt:message key="register"/>">
+                <fmt:message key="register.phone"/><input type="number" name="phoneNumber" value="+77"
+                                                          required/>&nbsp; ${invalidPhoneNumberMessage}<br/><br/>
+                <button type="submit"><fmt:message key="register"/></button>
             </form>
         </div>
     </div>

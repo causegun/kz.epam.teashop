@@ -1,10 +1,11 @@
 package dao.impl;
 
 import connection.ConnectionPool;
-import connection.ConnectionPoolException;
+import exception.ConnectionPoolException;
 import dao.CartDao;
 import dao.factory.DaoFactory;
 import entity.Cart;
+import exception.DAOException;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
@@ -29,10 +30,12 @@ public class CartDaoImpl implements CartDao {
 
     private static final String SQL_GET_CART_ID = "SELECT id FROM cart WHERE userId = ? AND createdAt = ?";
 
+    private static final String SQL_DELETE_CART ="DELETE FROM cart WHERE id = ?";
+
     ConnectionPool connectionPool = DaoFactory.getConnectionPool();
 
     @Override
-    public List<Cart> getAll() {
+    public List<Cart> getAll() throws DAOException, ConnectionPoolException {
         List<Cart> carts = new ArrayList<>();
         Connection connection = null;
         PreparedStatement statement = null;
@@ -52,7 +55,7 @@ public class CartDaoImpl implements CartDao {
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting Carts from database. Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error querying carts from database", e);
         } finally {
             if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
@@ -61,7 +64,7 @@ public class CartDaoImpl implements CartDao {
     }
 
     @Override
-    public Cart get(Long id) {
+    public Cart get(Long id) throws DAOException, ConnectionPoolException {
         Cart cart = new Cart();
         Connection connection = null;
         PreparedStatement statement = null;
@@ -79,7 +82,7 @@ public class CartDaoImpl implements CartDao {
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting Cart from database. Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error querying cart from database", e);
         } finally {
             if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);
@@ -103,7 +106,7 @@ public class CartDaoImpl implements CartDao {
     }
 
     @Override
-    public void insert(Cart cart) {
+    public void insert(Cart cart) throws DAOException, ConnectionPoolException {
         Connection connection = null;
         PreparedStatement statement = null;
 
@@ -122,7 +125,7 @@ public class CartDaoImpl implements CartDao {
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while inserting Cart to database. Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error inserting cart to database", e);
         } finally {
             if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
@@ -130,7 +133,7 @@ public class CartDaoImpl implements CartDao {
     }
 
     @Override
-    public void update(Cart cart) {
+    public void update(Cart cart) throws DAOException, ConnectionPoolException {
         Connection connection = null;
         PreparedStatement statement = null;
 
@@ -147,7 +150,7 @@ public class CartDaoImpl implements CartDao {
             statement.executeUpdate();
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while updating Cart in database. Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error updating cart in database", e);
         } finally {
             if (connection != null && statement != null)
                 connectionPool.closeConnection(connection, statement);
@@ -155,12 +158,27 @@ public class CartDaoImpl implements CartDao {
     }
 
     @Override
-    public void delete(Cart cart) {
+    public void delete(Cart cart) throws DAOException, ConnectionPoolException {
+        Connection connection = null;
+        PreparedStatement statement = null;
 
+        try {
+            connection = connectionPool.takeConnection();
+            statement = connection.prepareStatement(SQL_DELETE_CART);
+            long id = cart.getId();
+            statement.setLong(1, id);
+            statement.executeUpdate();
+        } catch (ConnectionPoolException | SQLException e) {
+            logger.error("Error while deleting cart from cart database . Message: " + e.getMessage());
+            throw new DAOException("Error deleting cart from database", e);
+        } finally {
+            if (connection != null && statement != null)
+                connectionPool.closeConnection(connection, statement);
+        }
     }
 
     @Override
-    public long getId(long userId, String datetime) {
+    public long getId(long userId, String datetime) throws ConnectionPoolException, DAOException {
         long cartId = 0;
         Connection connection = null;
         PreparedStatement statement = null;
@@ -179,7 +197,7 @@ public class CartDaoImpl implements CartDao {
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting ID from cart database. Message: " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException("Error while getting ID from cart database", e);
         } finally {
             if (connection != null && statement != null && resultSet != null)
                 connectionPool.closeConnection(connection, statement, resultSet);

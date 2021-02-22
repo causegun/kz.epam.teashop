@@ -4,6 +4,8 @@ import dao.UserDao;
 import dao.factory.DaoFactory;
 import entity.Language;
 import entity.User;
+import exception.ConnectionPoolException;
+import exception.DAOException;
 import org.apache.log4j.Logger;
 
 import javax.servlet.RequestDispatcher;
@@ -21,39 +23,16 @@ public class LoginService implements Service {
 
     private final static Logger logger = Logger.getLogger(LoginService.class);
 
-    static String hashPassword(String password) {
-        MessageDigest messageDigest = null;
-
-        try {
-            messageDigest = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            logger.error("Error while hashing password. Message: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        byte[] messageBytes = new byte[0];
-
-        if (messageDigest != null) {
-            messageBytes = messageDigest.digest(password.getBytes());
-        }
-
-        StringBuilder stringBuilder = new StringBuilder();
-        for (byte b : messageBytes) {
-            stringBuilder.append(String.format("%02X", b));
-        }
-        return stringBuilder.toString();
-    }
-
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, ParseException, SQLException {
+            throws ServletException, IOException, ParseException, SQLException, ConnectionPoolException, DAOException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String hashedPassword = null;
         UserDao userDao = DaoFactory.getUserDao();
 
         if (password != null) {
-            hashedPassword = hashPassword(password);
+            hashedPassword = ServiceUtils.hashPassword(password);
         }
 
         User user = userDao.checkLogin(email, hashedPassword);
@@ -63,26 +42,14 @@ public class LoginService implements Service {
         if (user != null) {
             session.setAttribute("customerUser", user);
             destPage = "home.jsp";
-        } else setIfInvalidMessage(request, email, session);
+        } else if (email != null) {
+            String messageEn = "Invalid email or password";
+            String messageRu = "Неправильный эл.адрес или пароль";
+            String attribute = "message";
+            ServiceUtils.setIfInvalidMessage(messageEn, messageRu, attribute, request, session);
+        }
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/" + destPage);
         dispatcher.forward(request, response);
-    }
-
-    static void setIfInvalidMessage(HttpServletRequest request, String email, HttpSession session) {
-        if (email != null) {
-            Language language = (Language) session.getAttribute("language");
-            String message = "Invalid email or password";
-            String languageName = null;
-
-            if (language != null)
-                languageName = language.getName();
-
-            if (languageName == null || languageName.equals("en"))
-                message = "Invalid email or password";
-            else if (languageName.equals("ru"))
-                message = "Неправильный эл.адрес или пароль";
-            request.setAttribute("message", message);
-        }
     }
 }

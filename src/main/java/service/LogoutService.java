@@ -11,7 +11,9 @@ import java.text.ParseException;
 
 public class LogoutService implements Service {
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException, SQLException {
+    public void execute(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException, ParseException, SQLException {
+
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.removeAttribute("customerUser");

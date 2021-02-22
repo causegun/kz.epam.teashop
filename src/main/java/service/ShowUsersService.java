@@ -3,15 +3,14 @@ package service;
 import dao.UserDao;
 import dao.factory.DaoFactory;
 import entity.User;
-import org.apache.log4j.Logger;
+import exception.ConnectionPoolException;
+import exception.DAOException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.List;
@@ -19,8 +18,6 @@ import java.util.List;
 public class ShowUsersService implements Service {
 
     UserDao userDao = DaoFactory.getUserDao();
-
-    private final static Logger logger = Logger.getLogger(ShowUsersService.class);
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response)
@@ -49,13 +46,14 @@ public class ShowUsersService implements Service {
                     listUser(request, response);
                     break;
             }
-        } catch (SQLException ex) {
+        } catch (SQLException | ConnectionPoolException | DAOException ex) {
             throw new ServletException(ex);
         }
     }
 
     public void listUser(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
+            throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
+
         List<User> users = userDao.getAll();
         request.setAttribute("users", users);
 
@@ -65,27 +63,42 @@ public class ShowUsersService implements Service {
 
     public void showNewForm(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
+
         RequestDispatcher dispatcher = request.getRequestDispatcher("/userForm.jsp");
         dispatcher.forward(request, response);
     }
 
     public void insertUser(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
-        String name = request.getParameter("name");
-        boolean isAdmin = Boolean.parseBoolean(request.getParameter("isAdmin"));
+            throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
+
         String email = request.getParameter("email");
-        String userPassword = request.getParameter("password");
-        String phoneNumber = request.getParameter("phoneNumber");
+        User existingUser = userDao.getByEmail(email);
+        if (existingUser != null) {
+            request.setAttribute("userExistMessage", "User already exist");
 
-        String hashedPassword = LoginService.hashPassword(userPassword);
-        User user = new User(isAdmin, name, email, hashedPassword, phoneNumber);
-        userDao.insert(user);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/userForm.jsp");
+            dispatcher.forward(request, response);
+        } else {
 
-        response.sendRedirect("/teashop/admin/users");
+            String userPassword = request.getParameter("password");
+            String phoneNumber = request.getParameter("phoneNumber");
+
+            if (ServiceUtils.validateUser(email, phoneNumber, userPassword, request, response, "/userForm.jsp")) {
+
+                String name = request.getParameter("name");
+                boolean isAdmin = Boolean.parseBoolean(request.getParameter("isAdmin"));
+                String hashedPassword = ServiceUtils.hashPassword(userPassword);
+                User user = new User(isAdmin, name, email, hashedPassword, phoneNumber);
+                userDao.insert(user);
+
+                response.sendRedirect("/teashop/admin/users");
+            }
+        }
     }
 
     public void deleteUser(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
+            throws SQLException, IOException, ConnectionPoolException, DAOException {
+
         long id = Long.parseLong(request.getParameter("id"));
         User user = new User();
         user.setId(id);
@@ -95,7 +108,8 @@ public class ShowUsersService implements Service {
     }
 
     public void showEditForm(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
+            throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
+
         long id = Long.parseLong(request.getParameter("id"));
         User user = userDao.get(id);
         request.setAttribute("user", user);
@@ -105,21 +119,30 @@ public class ShowUsersService implements Service {
     }
 
     public void updateUser(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
-        long id = Long.parseLong(request.getParameter("id"));
-        String name = request.getParameter("name");
-        boolean isAdmin = Boolean.parseBoolean(request.getParameter("isAdmin"));
+            throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
+
         String email = request.getParameter("email");
         String phoneNumber = request.getParameter("phoneNumber");
+        long id = Long.parseLong(request.getParameter("id"));
+        User userUpdate = userDao.get(id);
+        request.setAttribute("user", userUpdate);
 
-        User user = new User();
-        user.setId(id);
-        user.setName(name);
-        user.setAdmin(isAdmin);
-        user.setEmail(email);
-        user.setPhoneNumber(phoneNumber);
-        userDao.update(user);
+        if (ServiceUtils.validateUser(email, phoneNumber, request, response, "/userForm.jsp")) {
+            String name = request.getParameter("name");
 
-        response.sendRedirect("/teashop/admin/users");
+            boolean isAdmin = Boolean.parseBoolean(request.getParameter("isAdmin"));
+
+            User user = new User();
+            user.setId(id);
+            user.setName(name);
+            user.setAdmin(isAdmin);
+            user.setEmail(email);
+            user.setPhoneNumber(phoneNumber);
+            userDao.update(user);
+
+            response.sendRedirect("/teashop/admin/users");
+        }
+
+
     }
 }

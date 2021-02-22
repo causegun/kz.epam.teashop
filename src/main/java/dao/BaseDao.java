@@ -1,20 +1,16 @@
 package dao;
 
 
-import connection.ConnectionPool;
-import connection.ConnectionPoolException;
 import entity.Entity;
+import exception.ConnectionPoolException;
+import exception.DAOException;
 
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.List;
 
 public interface BaseDao<K, T extends Entity> {
-    List<T> getAll();
-    T get(K id);
-    void insert(T t);
-    void update(T t);
-    void delete(T t);
+    List<T> getAll() throws DAOException, ConnectionPoolException;
+    T get(K id) throws DAOException, ConnectionPoolException;
+    void insert(T t) throws DAOException, ConnectionPoolException;
+    void update(T t) throws DAOException, ConnectionPoolException;
+    void delete(T t) throws DAOException, ConnectionPoolException;
 }

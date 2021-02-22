@@ -1,5 +1,6 @@
 package connection;
 
+import exception.ConnectionPoolException;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
@@ -25,14 +26,17 @@ public final class ConnectionPool {
             this.user = dbResourceManager.getValue(DBParameter.DB_USER);
             this.password = dbResourceManager.getValue(DBParameter.DB_PASSWORD);
         } catch (NullPointerException e) {
-            logger.error("Error while setting driver settings in connection pool. Message: " + e.getMessage());
-            e.printStackTrace();
+            try {
+                throw new ConnectionPoolException("Empty driver setting(s). ", e);
+            } catch (ConnectionPoolException connectionPoolException) {
+                logger.error("Error while getting driver settings in connection pool. Message: "
+                        + connectionPoolException.getMessage() + "(" + e.getMessage() + ")");
+            }
         }
         try {
             this.poolSize = Integer.parseInt(dbResourceManager.getValue(DBParameter.DB_POLL_SIZE));
         } catch (NumberFormatException e) {
             logger.error("Error while getting size of connection pool. Message: " + e.getMessage());
-            e.printStackTrace();
             poolSize = 10;
         }
     }
@@ -43,8 +47,11 @@ public final class ConnectionPool {
             try {
                 obj.initPoolData();
             } catch (ConnectionPoolException e) {
-                logger.error("Error while getting instance of connection pool. Message: " + e.getMessage());
-                e.printStackTrace();
+                try {
+                    throw new ConnectionPoolException("Can't init connection pool data", e);
+                } catch (ConnectionPoolException connectionPoolException) {
+                    logger.error("Error while getting instance of connection pool. Message: " + connectionPoolException.getMessage());
+                }
             }
         }
         return obj;
@@ -58,12 +65,12 @@ public final class ConnectionPool {
                 Connection connection = DriverManager.getConnection(url, user, password);
                 connectionQueue.add(connection);
             }
-        } catch (SQLException e) {
-            logger.error("SQLException in ConnectionPool. Message: " + e.getMessage());
-            throw new ConnectionPoolException("SQLException in ConnectionPool. Message: ", e);
         } catch (ClassNotFoundException e) {
-            logger.error("Can't find database driver class" + e.getMessage());
-            throw new ConnectionPoolException("Can't find database driver class. Message: ", e);
+            logger.error("Can't find database driver class. Message: " + e.getMessage());
+            throw new ConnectionPoolException("Can't find database driver class. ", e);
+        } catch (SQLException e) {
+            logger.error("Can't get connection to a database. Message: " + e.getMessage());
+            throw new ConnectionPoolException("Can't get connection to a database. ", e);
         }
     }
 
@@ -74,33 +81,36 @@ public final class ConnectionPool {
             connection = connectionQueue.take();
         } catch (InterruptedException e) {
             logger.error("Error connecting to the data source. Message: " + e.getMessage());
-            throw new ConnectionPoolException("Error connecting to the data source.", e);
+            throw new ConnectionPoolException("Can't take connection from queue.", e);
         }
         return connection;
     }
 
-    public void closeConnection(Connection con, Statement st, ResultSet rs) {
+    public void closeConnection(Connection con, Statement st, ResultSet rs) throws ConnectionPoolException {
         connectionQueue.add(con);
 
         try {
             rs.close();
         } catch (SQLException e) {
             logger.error("ResultSet isn't closed. Message: " + e.getMessage());
+            throw new ConnectionPoolException("ResultSet isn't closed. ", e);
         }
         try {
             st.close();
         } catch (SQLException e) {
             logger.error("Statement isn't closed. Message: " + e.getMessage());
+            throw new ConnectionPoolException("Statement isn't closed. ", e);
         }
     }
 
-    public void closeConnection(Connection con, Statement st) {
+    public void closeConnection(Connection con, Statement st) throws ConnectionPoolException {
         connectionQueue.add(con);
 
         try {
             st.close();
         } catch (SQLException e) {
             logger.error("Statement isn't closed. Message: " + e.getMessage());
+            throw new ConnectionPoolException("Statement isn't closed. ", e);
         }
     }
 }

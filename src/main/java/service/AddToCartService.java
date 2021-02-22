@@ -6,6 +6,8 @@ import dao.ProductDao;
 import dao.UserDao;
 import dao.factory.DaoFactory;
 import entity.*;
+import exception.ConnectionPoolException;
+import exception.DAOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +23,8 @@ import java.time.format.DateTimeFormatter;
 
 public class AddToCartService implements Service {
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException, SQLException {
+    public void execute(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException, ParseException, SQLException, DAOException, ConnectionPoolException {
 
         long productId = Long.parseLong(request.getParameter("id"));
         HttpSession session = request.getSession();
@@ -71,15 +74,18 @@ public class AddToCartService implements Service {
         Language language = (Language) session.getAttribute("language");
         String addMessage = "";
         String languageName = null;
+
         if (language != null)
             languageName = language.getName();
 
         if (languageName == null || languageName.equals("en"))
             addMessage = "Added " + quantity + " " + product.getName() + " to cart";
+
         else if (languageName.equals("ru"))
             addMessage = "Добавлено " + quantity + " " + product.getName() + " в корзину";
 
         session.setAttribute("addMessage", addMessage);
+
         response.sendRedirect("/teashop/productList/category?id=" + product.getCategoryId());
     }
 }

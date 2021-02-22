@@ -1,12 +1,14 @@
 package service;
 
+import dao.CartDao;
 import dao.CartItemDao;
 import dao.ProductDao;
 import dao.factory.DaoFactory;
 import entity.Cart;
 import entity.CartItem;
-import entity.Language;
 import entity.Product;
+import exception.ConnectionPoolException;
+import exception.DAOException;
 import org.apache.log4j.Logger;
 
 import javax.servlet.RequestDispatcher;
@@ -22,7 +24,12 @@ import java.util.List;
 
 
 public class CartService implements Service {
+
     private final static Logger logger = Logger.getLogger(CartService.class);
+
+    CartItemDao cartItemDao = DaoFactory.getCartItemDao();
+    ProductDao productDao = DaoFactory.getProductDao();
+    CartDao cartDao = DaoFactory.getCartDao();
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException, SQLException {
@@ -46,34 +53,26 @@ public class CartService implements Service {
                     listCartItems(request, response);
                     break;
             }
-        } catch (SQLException ex) {
+        } catch (SQLException | ConnectionPoolException | DAOException ex) {
             logger.error("Error in executing CartService. Message: " + ex.getMessage());
             throw new ServletException(ex);
         }
     }
 
     public void listCartItems(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
+            throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
         HttpSession session = request.getSession();
         Cart cart = (Cart) session.getAttribute("cart");
 
         if (cart == null) {
-            Language language = (Language) session.getAttribute("language");
-            String noCartMessage = "Buy something first!";
-            String languageName = null;
-            if (language != null)
-                languageName = language.getName();
+            String noCartMessageEn = "Buy something first!";
+            String noCartMessageRu = "Купите что-нибудь!";
+            String attribute = "noCartMessage";
+            ServiceUtils.setIfInvalidMessage(noCartMessageEn, noCartMessageRu, attribute, request, session);
 
-            if (languageName == null || languageName.equals("en"))
-                noCartMessage = "Buy something first!";
-            else if (languageName.equals("ru"))
-                noCartMessage = "Купите что-нибудь!";
-
-            session.setAttribute("noCartMessage", noCartMessage);
-            response.sendRedirect("/teashop/");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/index.jsp");
+            dispatcher.forward(request, response);
         } else {
-            CartItemDao cartItemDao = DaoFactory.getCartItemDao();
-            ProductDao productDao = DaoFactory.getProductDao();
             List<CartItem> cartItems = cartItemDao.getByCartId(cart.getId());
             Product product;
 
@@ -91,10 +90,12 @@ public class CartService implements Service {
     }
 
     public void deleteCart(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
+            throws SQLException, IOException, ConnectionPoolException, DAOException {
         HttpSession session = request.getSession();
         Cart cart = (Cart) session.getAttribute("cart");
-        DaoFactory.getCartDao().delete(cart);
+        long cartId = cart.getId();
+        cartItemDao.deleteByCartId(cartId);
+        cartDao.delete(cart);
         session.removeAttribute("cart");
 
         response.sendRedirect("/teashop/categoryList");
@@ -103,8 +104,10 @@ public class CartService implements Service {
     public void order(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         HttpSession session = request.getSession();
+        Cart cart = (Cart) session.getAttribute("cart");
+        request.setAttribute("createdAt", cart.getCreatedAt());
+        request.setAttribute("totalPrice", cart.getTotalPrice());
         session.removeAttribute("cart");
-
         RequestDispatcher dispatcher = request.getRequestDispatcher("/order.jsp");
         dispatcher.forward(request, response);
     }
@@ -115,9 +118,7 @@ public class CartService implements Service {
     }
 
     public void deleteCartItem(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
-        CartItemDao cartItemDao = DaoFactory.getCartItemDao();
-        ProductDao productDao = DaoFactory.getProductDao();
+            throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
 
         long id = Long.parseLong(request.getParameter("id"));
         CartItem cartItem = cartItemDao.get(id);
@@ -129,10 +130,15 @@ public class CartService implements Service {
         BigDecimal productPrice = product.getPrice();
         BigDecimal quantity = new BigDecimal(cartItem.getQuantity());
         BigDecimal totalPriceOfDeletingProducts = productPrice.multiply(quantity);
-        BigDecimal totalPrice = cart.getTotalPrice();
-        cart.setTotalPrice(totalPrice.subtract(totalPriceOfDeletingProducts));
+        BigDecimal previousTotalPrice = cart.getTotalPrice();
+        BigDecimal currentTotalPrice = previousTotalPrice.subtract(totalPriceOfDeletingProducts);
 
-        cartItemDao.delete(cartItem);
-        response.sendRedirect("/teashop/cart");
+        if (currentTotalPrice.equals(new BigDecimal(0)))
+            deleteCart(request, response);
+        else {
+            cart.setTotalPrice(currentTotalPrice);
+            cartItemDao.delete(cartItem);
+            response.sendRedirect("/teashop/cart");
+        }
     }
 }
