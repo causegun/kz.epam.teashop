@@ -33,7 +33,7 @@ CREATE TABLE `cart` (
   UNIQUE KEY `cart_id_uindex` (`id`),
   KEY `cart_user_info_id_fk` (`userId`),
   CONSTRAINT `cart_user_info_id_fk` FOREIGN KEY (`userId`) REFERENCES `user_info` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -64,7 +64,7 @@ CREATE TABLE `cart_item` (
   KEY `cart_item_cart_id_fk` (`cartId`),
   CONSTRAINT `cart_item_cart_id_fk` FOREIGN KEY (`cartId`) REFERENCES `cart` (`id`),
   CONSTRAINT `cart_item_ibfk_3` FOREIGN KEY (`productId`) REFERENCES `product` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=83 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=108 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -161,7 +161,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT INTO `product` VALUES (15,1,1,'Bombai Chai','Transport yourself to new places with the rich and exotic flavor of Bombay Chai Black Chai Tea. A unique twist on traditional Indian black chai tea, Revolution Tea’s Bombay Chai Tea bags brings together a collection of bold flavors like ginger, cloves, nutmeg, cinnamon chips and premium full leaf Assam team leaves.',1000,'pictures/Bombay_Chai.jpg'),(16,2,2,'Бомбейский чай','Перенеситесь в новые места с богатым и экзотическим вкусом. Бомбейский чай в пакетиках представляет собой уникальный вариант традиционного индийского черного чая. Он объединяет в себе коллекцию ярких вкусов, таких как имбирь, гвоздика, мускатный орех, чипсы с корицей и цельные листья сборной Ассама премиум-класса.',1000,'pictures/Bombay_Chai.jpg'),(17,1,1,'Earl Grey','This award-winning Lavender Earl Grey Black Tea blend brings a new twist to a classic favorite. At the Darjeeling estate where our teas are grown, Ceylon and Oolong tea leaves are flavored with a hint of Oil of Bergamot. From there they are joined with French blue lavender to add the perfect amount of sweetness. ',1100,'pictures/Earl_Grey.jpg'),(18,2,2,'Эрл Грэй','Эта отмеченная наградами смесь черного чая с лавандой и графством Грей привносит новый поворот в классический фаворит. В поместье Дарджилинг, где выращивают наши чаи, листья цейлонского и улунского чая приправлены нотками масла бергамота. Оттуда они соединяются с французской голубой лавандой, чтобы добавить идеальное количество сладости.',1100,'pictures/Earl_Grey.jpg'),(19,1,1,'Raspberry','Wake up in the best way possible with a delicious Raspberry Black Tea! This twist on traditional black tea marries fresh picked raspberries, strawberry leaves, rose petals and premium full leaf Assam black tea.',1200,'pictures/Raspberry.jpg'),(20,2,2,'Малиновый','Просыпайтесь как можно лучше с восхитительным черным чаем с малиной! Этот вариант традиционного черного чая сочетает в себе свежесобранную малину, листья клубники, лепестки роз и цельнолистовой черный чай высшего качества Ассам.',1200,'pictures/Raspberry.jpg'),(21,1,3,'Orange Chocolate','Orange Chocolate Green Tea is one of the most unique and luscious flavors you\'ll ever brew.',1050,'pictures/Orange_Chocolate.jpg'),(22,2,4,'Апельсин-шоколад','Апельсин-шоколад с зеленым чаем - один из самых уникальных и сочных ароматов, которые вы когда-либо варили.',1050,'pictures/Orange_Chocolate.jpg'),(23,1,3,'Peach Mango','Unusually light and smooth, this refreshing tea blends the juicy flavor of peaches with the mellow zing of mangoes.',1150,'pictures/Peach_Mango.jpg'),(24,2,4,'Манго Персик','Необычайно легкий и мягкий, этот освежающий чай сочетает в себе сочный аромат персиков с мягким привкусом манго.',1150,'pictures/Peach_Mango.jpg'),(25,1,3,'Tropical','Tropical green tea is an amazing natural blend of Dragonwell green tea, Chinese Young Hyson green tea, and pineapple flavoring.',1250,'pictures/Tropical.jpg'),(26,2,4,'Тропический','Тропический зеленый чай - это удивительная натуральная смесь зеленого чая Dragonwell, китайского зеленого чая Young Hyson и ароматизатора ананаса.',1250,'pictures/Tropical.jpg'),(27,1,5,'Pear','Delicate and fragrant as a fresh-picked pear, our Pear White tea blend combines white tea, slivers of sweet pears, and natural pear flavor. ',1300,'pictures/Pear.jpg'),(28,2,6,'Груша','Нежный и ароматный, как свежесобранная груша, сочетает в себе белый чай, кусочки сладкой груши и натуральный аромат груши.',1300,'pictures/Pear.jpg'),(29,1,5,'Pomegranate','This antioxidant-rich white tea will delight your afternoon, evening, or morning, taking advantage of the light caffeine content and the robust flavor.',1400,'pictures/Pomegranate.jpg'),(30,2,6,'Гранат','Этот богатый антиоксидантами белый чай порадует вас днем, вечером или утром, благодаря легкому содержанию кофеина и сильному вкусу.',1400,'pictures/Pomegranate.jpg');
+INSERT INTO `product` VALUES (15,1,1,'Bombai Chai','Transport yourself to new places with the rich and exotic flavor of Bombay Chai Black Chai Tea. A unique twist on traditional Indian black chai tea, Revolution Tea’s Bombay Chai Tea bags brings together a collection of bold flavors like ginger, cloves, nutmeg, cinnamon chips and premium full leaf Assam team leaves.\r\n                     \r\n                     \r\n                     ',1000,'pictures/Bombay_Chai.jpg'),(16,2,2,'Бомбейский чай','Перенеситесь в новые места с богатым и экзотическим вкусом. Бомбейский чай в пакетиках представляет собой уникальный вариант традиционного индийского черного чая. Он объединяет в себе коллекцию ярких вкусов, таких как имбирь, гвоздика, мускатный орех, чипсы с корицей и цельные листья сборной Ассама премиум-класса.',1000,'pictures/Bombay_Chai.jpg'),(17,1,1,'Earl Grey','This award-winning Lavender Earl Grey Black Tea blend brings a new twist to a classic favorite. At the Darjeeling estate where our teas are grown, Ceylon and Oolong tea leaves are flavored with a hint of Oil of Bergamot. From there they are joined with French blue lavender to add the perfect amount of sweetness. ',1100,'pictures/Earl_Grey.jpg'),(18,2,2,'Эрл Грэй','Эта отмеченная наградами смесь черного чая с лавандой и графством Грей привносит новый поворот в классический фаворит. В поместье Дарджилинг, где выращивают наши чаи, листья цейлонского и улунского чая приправлены нотками масла бергамота. Оттуда они соединяются с французской голубой лавандой, чтобы добавить идеальное количество сладости.',1100,'pictures/Earl_Grey.jpg'),(19,1,1,'Raspberry','Wake up in the best way possible with a delicious Raspberry Black Tea! This twist on traditional black tea marries fresh picked raspberries, strawberry leaves, rose petals and premium full leaf Assam black tea.',1200,'pictures/Raspberry.jpg'),(20,2,2,'Малиновый','Просыпайтесь как можно лучше с восхитительным черным чаем с малиной! Этот вариант традиционного черного чая сочетает в себе свежесобранную малину, листья клубники, лепестки роз и цельнолистовой черный чай высшего качества Ассам.',1200,'pictures/Raspberry.jpg'),(21,1,3,'Orange Chocolate','Orange Chocolate Green Tea is one of the most unique and luscious flavors you\'ll ever brew.',1050,'pictures/Orange_Chocolate.jpg'),(22,2,4,'Апельсин-шоколад','Апельсин-шоколад с зеленым чаем - один из самых уникальных и сочных ароматов, которые вы когда-либо варили.',1050,'pictures/Orange_Chocolate.jpg'),(23,1,3,'Peach Mango','Unusually light and smooth, this refreshing tea blends the juicy flavor of peaches with the mellow zing of mangoes.',1150,'pictures/Peach_Mango.jpg'),(24,2,4,'Манго Персик','Необычайно легкий и мягкий, этот освежающий чай сочетает в себе сочный аромат персиков с мягким привкусом манго.',1150,'pictures/Peach_Mango.jpg'),(25,1,3,'Tropical','Tropical green tea is an amazing natural blend of Dragonwell green tea, Chinese Young Hyson green tea, and pineapple flavoring.',1250,'pictures/Tropical.jpg'),(26,2,4,'Тропический','Тропический зеленый чай - это удивительная натуральная смесь зеленого чая Dragonwell, китайского зеленого чая Young Hyson и ароматизатора ананаса.',1250,'pictures/Tropical.jpg'),(27,1,5,'Pear','Delicate and fragrant as a fresh-picked pear, our Pear White tea blend combines white tea, slivers of sweet pears, and natural pear flavor. ',1300,'pictures/Pear.jpg'),(28,2,6,'Груша','Нежный и ароматный, как свежесобранная груша, сочетает в себе белый чай, кусочки сладкой груши и натуральный аромат груши.',1300,'pictures/Pear.jpg'),(29,1,5,'Pomegranate','This antioxidant-rich white tea will delight your afternoon, evening, or morning, taking advantage of the light caffeine content and the robust flavor.',1400,'pictures/Pomegranate.jpg'),(30,2,6,'Гранат','Этот богатый антиоксидантами белый чай порадует вас днем, вечером или утром, благодаря легкому содержанию кофеина и сильному вкусу.',1400,'pictures/Pomegranate.jpg');
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -182,7 +182,7 @@ CREATE TABLE `user_info` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
   UNIQUE KEY `user_info_email_uindex` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -191,9 +191,17 @@ CREATE TABLE `user_info` (
 
 LOCK TABLES `user_info` WRITE;
 /*!40000 ALTER TABLE `user_info` DISABLE KEYS */;
-INSERT INTO `user_info` VALUES (1,'admin','admin@mail.com','C05F4B14F55B1659103C5FECC9510DAA','9999999999',1),(14,'ad','ad@mail.ru','827CCB0EEA8A706C4C34A16891F84E7B','7000000000',0),(16,'Майк','mike@mail','18126E7BD3F84B3F3E4DF094DEF5B7DE','80000000000',0);
+INSERT INTO `user_info` VALUES (1,'admin','admin@mail.com','E00CF25AD42683B3DF678C61F42C6BDA','77779008050',1),(23,'Kiryu','dame@dane.kz','2A2ACE68878CBBB8B215E2BC0751A5A2','77019305099',0);
 /*!40000 ALTER TABLE `user_info` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping events for database 'shop'
+--
+
+--
+-- Dumping routines for database 'shop'
+--
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -204,4 +212,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-02-02  3:30:13
+-- Dump completed on 2021-02-22 15:11:07
