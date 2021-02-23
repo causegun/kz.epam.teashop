@@ -17,6 +17,7 @@ public class ServiceFactory {
         SERVICE_MAP.put("/TEASHOP/USER/HOME", new RegisterService());
         SERVICE_MAP.put("/TEASHOP/LOGOUT", new LogoutService());
         SERVICE_MAP.put("/TEASHOP/REGISTER", new RegisterPageService());
+        SERVICE_MAP.put("/TEASHOP/LANGUAGE", new LanguageService());
         SERVICE_MAP.put("/TEASHOP/CATEGORYLIST", new CategoryListService());
         SERVICE_MAP.put("/TEASHOP/PRODUCTLIST/CATEGORY", new ProductListService());
         SERVICE_MAP.put("/TEASHOP/PRODUCTLIST/ADDTOCART/PRODUCT", new AddToCartService());
@@ -33,7 +34,6 @@ public class ServiceFactory {
         SERVICE_MAP.put("/TEASHOP/ADMIN/USERS/DELETE", new ShowUsersService());
         SERVICE_MAP.put("/TEASHOP/ADMIN/USERS/EDIT", new ShowUsersService());
         SERVICE_MAP.put("/TEASHOP/ADMIN/USERS/UPDATE", new ShowUsersService());
-        SERVICE_MAP.put("/TEASHOP/LANGUAGE", new LanguageService());
         SERVICE_MAP.put("/TEASHOP/ADMIN/PRODUCTS", new ShowProductsService());
         SERVICE_MAP.put("/TEASHOP/ADMIN/PRODUCTS/NEW", new ShowProductsService());
         SERVICE_MAP.put("/TEASHOP/ADMIN/PRODUCTS/INSERT", new ShowProductsService());
@@ -48,6 +48,8 @@ public class ServiceFactory {
         SERVICE_MAP.put("/TEASHOP/ADMIN/CATEGORIES/EDIT", new ShowCategoriesService());
         SERVICE_MAP.put("/TEASHOP/ADMIN/CATEGORIES/UPDATE", new ShowCategoriesService());
         SERVICE_MAP.put("/TEASHOP/ADMIN/CATEGORIES/RU", new ShowCategoriesService());
+        SERVICE_MAP.put("/TEASHOP/ADMIN/ORDERS", new ShowOrdersService());
+        SERVICE_MAP.put("/TEASHOP/ADMIN/ORDERS/DELETE", new ShowOrdersService());
 
     }
     public Service getService(String request) {

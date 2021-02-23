@@ -1,7 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
 <c:choose>
     <c:when test="${language.name == null}">
         <c:set var="currentLocale" value="en"/>
@@ -44,16 +43,30 @@
             </ul>
         </div>
         <div id="main">
-            <h2><fmt:message key="admin.home"/></h2>
-            <div style="text-align: center">
-                <h2><fmt:message key="welcome"/></h2>
-                <b>${adminUser.name} (${adminUser.email})</b>
-                <br><br>
-                <a href="users"><fmt:message key="admin.users"/></a>
-                <a href="products"><fmt:message key="admin.products"/></a>
-                <a href="categories"><fmt:message key="admin.categories"/></a>
-                <a href="orders"><fmt:message key="order.orderList"/></a>
-                <a href="logout"><fmt:message key="logout"/></a>
+            <h2><fmt:message key="orders"/></h2>
+            <div align="center">
+                <table border="1" cellpadding="3">
+                    <tr>
+                        <th>ID</th>
+                        <th><fmt:message key="order.userId"/></th>
+                        <th><fmt:message key="order.createDate"/></th>
+                        <th><fmt:message key="order.totalPrice"/></th>
+                        <th><fmt:message key="actions"/></th>
+                    </tr>
+                    <c:forEach var="cart" items="${carts}">
+                        <tr>
+                            <td><c:out value="${cart.id}"/></td>
+                            <td><c:out value="${cart.userId}"/></td>
+                            <td><c:out value="${cart.createdAt}"/></td>
+                            <td><c:out value="${cart.totalPrice}"/></td>
+                            <td>
+                                <a href="/teashop/admin/orders/delete?id=<c:out value='${cart.id}' />"
+                                   onclick="return confirm('<fmt:message key="cart.delete"/>?')"><fmt:message
+                                        key="delete"/></a>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </table>
             </div>
         </div>
     </div>
