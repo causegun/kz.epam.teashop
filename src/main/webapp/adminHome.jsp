@@ -52,7 +52,7 @@
                 <a href="users"><fmt:message key="admin.users"/></a>
                 <a href="products"><fmt:message key="admin.products"/></a>
                 <a href="categories"><fmt:message key="admin.categories"/></a>
-                <a href="orders"><fmt:message key="order.orderList"/></a>
+                <a href="orders"><fmt:message key="orders"/></a>
                 <a href="logout"><fmt:message key="logout"/></a>
             </div>
         </div>

@@ -1,6 +1,4 @@
 package entity;
 
-import java.io.Serializable;
-
-public abstract class Entity {
+public interface Entity {
 }

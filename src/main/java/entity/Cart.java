@@ -2,7 +2,7 @@ package entity;
 
 import java.math.BigDecimal;
 
-public class Cart extends Entity {
+public class Cart implements Entity {
     private long id;
     private long userId;
     private String createdAt;

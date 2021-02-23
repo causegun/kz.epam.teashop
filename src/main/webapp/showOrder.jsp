@@ -43,7 +43,7 @@
             </ul>
         </div>
         <div id="main">
-            <h2><fmt:message key="orders"/></h2>
+            <h2><fmt:message key="order.orderList"/></h2>
             <div align="center">
                 <table border="1" cellpadding="3">
                     <tr>
