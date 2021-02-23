@@ -9,7 +9,7 @@ import java.util.concurrent.BlockingQueue;
 
 public final class ConnectionPool {
     private final static Logger logger = Logger.getLogger(ConnectionPool.class);
-    private static ConnectionPool obj = null;
+    private static ConnectionPool instance;
     private BlockingQueue<Connection> connectionQueue;
     private String driverName;
     private String url;
@@ -42,10 +42,10 @@ public final class ConnectionPool {
     }
 
     public static ConnectionPool getInstance() {
-        if (obj == null) {
-            obj = new ConnectionPool();
+        if (instance == null) {
+            instance = new ConnectionPool();
             try {
-                obj.initPoolData();
+                instance.initPoolData();
             } catch (ConnectionPoolException e) {
                 try {
                     throw new ConnectionPoolException("Can't init connection pool data", e);
@@ -54,10 +54,10 @@ public final class ConnectionPool {
                 }
             }
         }
-        return obj;
+        return instance;
     }
 
-    public void initPoolData() throws ConnectionPoolException {
+    private void initPoolData() throws ConnectionPoolException {
         try {
             Class.forName(driverName);
             connectionQueue = new ArrayBlockingQueue<>(poolSize);

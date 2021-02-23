@@ -40,7 +40,8 @@ public class CategoryDaoImpl implements CategoryDao {
     private static final String LANGUAGE_ID = "languageId";
     private static final String CATEGORY_NAME = "categoryName";
 
-    ConnectionPool connectionPool = DaoFactory.getConnectionPool();
+    private final DaoFactory daoFactory = DaoFactory.getInstance();
+    private final ConnectionPool connectionPool = daoFactory.getConnectionPool();
 
     @Override
     public List<Category> getByLanguage(long languageId) throws ConnectionPoolException, DAOException {
@@ -92,7 +93,7 @@ public class CategoryDaoImpl implements CategoryDao {
             long id;
             long languageId;
             String categoryName;
-            ProductDao productDao = DaoFactory.getProductDao();
+            ProductDao productDao = daoFactory.getProductDao();
             List<Product> products;
 
             while (resultSet.next()) {
@@ -132,7 +133,7 @@ public class CategoryDaoImpl implements CategoryDao {
             statement = connection.prepareStatement(SQL_SELECT_CATEGORY_BY_ID);
             statement.setLong(1, id);
             resultSet = statement.executeQuery();
-            ProductDao productDao = DaoFactory.getProductDao();
+            ProductDao productDao = daoFactory.getProductDao();
             List<Product> products;
 
             long languageId;

@@ -17,6 +17,8 @@ import java.text.ParseException;
 
 public class AdminLoginService implements Service {
 
+    private final DaoFactory daoFactory = DaoFactory.getInstance();
+
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ParseException, SQLException, ConnectionPoolException, DAOException {
@@ -24,7 +26,7 @@ public class AdminLoginService implements Service {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String hashedPassword = null;
-        UserDao userDao = DaoFactory.getUserDao();
+        UserDao userDao = daoFactory.getUserDao();
 
         if (password != null) {
             hashedPassword = ServiceUtils.hashPassword(password);

@@ -18,6 +18,9 @@ import java.text.ParseException;
 import java.util.List;
 
 public class CategoryListService implements Service {
+
+    private final DaoFactory daoFactory = DaoFactory.getInstance();
+
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ParseException, SQLException, ConnectionPoolException, DAOException {
@@ -25,7 +28,7 @@ public class CategoryListService implements Service {
         HttpSession session = request.getSession();
         Language language = (Language) session.getAttribute("language");
         List<Category> categories;
-        CategoryDao categoryDao = DaoFactory.getCategoryDao();
+        CategoryDao categoryDao = daoFactory.getCategoryDao();
 
         if (language == null)
             categories = categoryDao.getByLanguage(1);

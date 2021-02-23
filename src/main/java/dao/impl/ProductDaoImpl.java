@@ -44,8 +44,8 @@ public class ProductDaoImpl implements ProductDao {
     private static final String PRICE = "price";
     private static final String PATH_TO_PICTURE = "pathToPicture";
 
-    ConnectionPool connectionPool = DaoFactory.getConnectionPool();
-
+    private final DaoFactory daoFactory = DaoFactory.getInstance();
+    private final ConnectionPool connectionPool = daoFactory.getConnectionPool();
 
     public ProductDaoImpl() {
     }

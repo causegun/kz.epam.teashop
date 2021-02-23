@@ -18,12 +18,14 @@ import java.util.List;
 
 public class ProductListService implements Service {
 
+    private final DaoFactory daoFactory = DaoFactory.getInstance();
+
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ParseException, SQLException, ConnectionPoolException, DAOException {
 
         long id = Long.parseLong(request.getParameter("id"));
-        List<Product> products = DaoFactory.getProductDao().getByCategory(id);
+        List<Product> products = daoFactory.getProductDao().getByCategory(id);
         HttpSession session = request.getSession();
 
         Language language = (Language) session.getAttribute("language");

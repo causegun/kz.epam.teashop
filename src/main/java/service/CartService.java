@@ -33,9 +33,10 @@ public class CartService implements Service {
     private static final String CART = "cart";
     private static final String CART_ITEMS = "cartItems";
 
-    CartItemDao cartItemDao = DaoFactory.getCartItemDao();
-    ProductDao productDao = DaoFactory.getProductDao();
-    CartDao cartDao = DaoFactory.getCartDao();
+    private final DaoFactory daoFactory = DaoFactory.getInstance();
+    private final CartItemDao cartItemDao = daoFactory.getCartItemDao();
+    private final ProductDao productDao = daoFactory.getProductDao();
+    private final CartDao cartDao = daoFactory.getCartDao();
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException, SQLException {
@@ -45,9 +46,6 @@ public class CartService implements Service {
             switch (action) {
                 case "/cart/delete":
                     deleteCartItem(request, response);
-                    break;
-                case "/cart/edit":
-                    editCartItem(request, response);
                     break;
                 case "/cart/deleteCart":
                     deleteCart(request, response);
@@ -118,13 +116,9 @@ public class CartService implements Service {
         dispatcher.forward(request, response);
     }
 
-    public void editCartItem(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
-        // will be added soon
-    }
 
     public void deleteCartItem(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
+            throws SQLException, IOException, ConnectionPoolException, DAOException {
 
         long id = Long.parseLong(request.getParameter(ID));
         CartItem cartItem = cartItemDao.get(id);

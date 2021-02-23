@@ -35,7 +35,8 @@ public class CartItemDaoImpl implements CartItemDao {
 
     private static final String SQL_SELECT_CART_ITEMS_BY_CART_ID = "SELECT * FROM cart_item WHERE cartId = ?";
 
-    ConnectionPool connectionPool = DaoFactory.getConnectionPool();
+    private final DaoFactory daoFactory = DaoFactory.getInstance();
+    private final ConnectionPool connectionPool = daoFactory.getConnectionPool();
 
     private static final String ID = "id";
     private static final String PRODUCT_ID = "productId";

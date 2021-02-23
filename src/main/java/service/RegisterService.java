@@ -15,7 +15,10 @@ import java.sql.SQLException;
 import java.text.ParseException;
 
 public class RegisterService implements Service {
-    UserDao userDao = DaoFactory.getUserDao();
+
+    private final DaoFactory daoFactory = DaoFactory.getInstance();
+
+    private final UserDao userDao = daoFactory.getUserDao();
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response)
@@ -40,7 +43,7 @@ public class RegisterService implements Service {
                 String hashedPassword = ServiceUtils.hashPassword(userPassword);
 
                 User user = new User(name, email, hashedPassword, phoneNumber);
-                DaoFactory.getUserDao().insert(user);
+                userDao.insert(user);
 
                 response.sendRedirect("/teashop/login");
             }

@@ -35,9 +35,10 @@ public class ShowProductsService implements Service {
     private static final String PATH_TO_PICTURE = "pathToPicture";
     private static final String PRODUCTS = "products";
 
-    CategoryDao categoryDao = DaoFactory.getCategoryDao();
-    ProductDao productDao = DaoFactory.getProductDao();
-    LanguageDao languageDao = DaoFactory.getLanguageDao();
+    private final DaoFactory daoFactory = DaoFactory.getInstance();
+    private final CategoryDao categoryDao = daoFactory.getCategoryDao();
+    private final ProductDao productDao = daoFactory.getProductDao();
+    private final LanguageDao languageDao = daoFactory.getLanguageDao();
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response)

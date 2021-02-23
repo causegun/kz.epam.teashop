@@ -22,16 +22,17 @@ import java.time.format.DateTimeFormatter;
 
 
 public class AddToCartService implements Service {
+    private final DaoFactory daoFactory = DaoFactory.getInstance();
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ParseException, SQLException, DAOException, ConnectionPoolException {
 
         long productId = Long.parseLong(request.getParameter("id"));
         HttpSession session = request.getSession();
-        ProductDao productDao = DaoFactory.getProductDao();
-        UserDao userDao = DaoFactory.getUserDao();
-        CartDao cartDao = DaoFactory.getCartDao();
-        CartItemDao cartItemDao = DaoFactory.getCartItemDao();
+        ProductDao productDao = daoFactory.getProductDao();
+        UserDao userDao = daoFactory.getUserDao();
+        CartDao cartDao = daoFactory.getCartDao();
+        CartItemDao cartItemDao = daoFactory.getCartItemDao();
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();

@@ -17,41 +17,37 @@ public class DaoFactory {
     public DaoFactory() {
     }
 
-    public static DaoFactory getInstance() {
-        if (instance == null) {
-            synchronized (DaoFactory.class) {
-                if (instance == null)
-                    instance = new DaoFactory();
-            }
-        }
+    public static synchronized DaoFactory getInstance() {
+        if (instance == null)
+            instance = new DaoFactory();
         return instance;
     }
 
-    public static ConnectionPool getConnectionPool() {
-        return getInstance().connectionPool;
+    public ConnectionPool getConnectionPool() {
+        return connectionPool;
     }
 
-    public static UserDao getUserDao() {
-        return getInstance().userDao;
+    public UserDao getUserDao() {
+        return userDao;
     }
 
-    public static ProductDao getProductDao() {
-        return getInstance().productDao;
+    public ProductDao getProductDao() {
+        return productDao;
     }
 
-    public static LanguageDao getLanguageDao() {
-        return getInstance().languageDao;
+    public LanguageDao getLanguageDao() {
+        return languageDao;
     }
 
-    public static CategoryDao getCategoryDao() {
-        return getInstance().categoryDao;
+    public CategoryDao getCategoryDao() {
+        return categoryDao;
     }
 
-    public static CartItemDao getCartItemDao() {
-        return getInstance().cartItemDao;
+    public CartItemDao getCartItemDao() {
+        return cartItemDao;
     }
 
-    public static CartDao getCartDao() {
-        return getInstance().cartDao;
+    public CartDao getCartDao() {
+        return cartDao;
     }
 }

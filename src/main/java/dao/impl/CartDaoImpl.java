@@ -37,7 +37,8 @@ public class CartDaoImpl implements CartDao {
     private static final String CREATED_AT = "createdAt";
     private static final String TOTAL_PRICE = "totalPrice";
 
-    ConnectionPool connectionPool = DaoFactory.getConnectionPool();
+    private final DaoFactory daoFactory = DaoFactory.getInstance();
+    private final ConnectionPool connectionPool = daoFactory.getConnectionPool();
 
     @Override
     public List<Cart> getAll() throws DAOException, ConnectionPoolException {

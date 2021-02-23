@@ -26,7 +26,8 @@ public class ShowUsersService implements Service {
     private static final String USERS = "users";
     private static final String USER = "user";
 
-    UserDao userDao = DaoFactory.getUserDao();
+    private final DaoFactory daoFactory = DaoFactory.getInstance();
+    private final UserDao userDao = daoFactory.getUserDao();
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response)
@@ -136,7 +137,7 @@ public class ShowUsersService implements Service {
         User userUpdate = userDao.get(id);
         request.setAttribute(USER, userUpdate);
 
-        if (ServiceUtils.validateUser(email, phoneNumber, request, response, "/userForm.jsp")) {
+        if (ServiceUtils.validateUser(email, phoneNumber, request, response)) {
             String name = request.getParameter(NAME);
 
             boolean isAdmin = Boolean.parseBoolean(request.getParameter(IS_ADMIN));

@@ -45,7 +45,8 @@ public class UserDaoImpl implements UserDao {
     private static final String PHONE_NUMBER = "phoneNumber";
     private static final String IS_ADMIN = "isAdmin";
 
-    ConnectionPool connectionPool = DaoFactory.getConnectionPool();
+    private final DaoFactory daoFactory = DaoFactory.getInstance();
+    private final ConnectionPool connectionPool = daoFactory.getConnectionPool();
 
     public UserDaoImpl() {
     }

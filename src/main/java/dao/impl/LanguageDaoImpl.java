@@ -28,7 +28,8 @@ public class LanguageDaoImpl implements LanguageDao {
 
     private static final String SQL_UPDATE_LANGUAGE = "UPDATE language_info SET languageName = ? WHERE id = ?";
 
-    ConnectionPool connectionPool = DaoFactory.getConnectionPool();
+    private final DaoFactory daoFactory = DaoFactory.getInstance();
+    private final ConnectionPool connectionPool = daoFactory.getConnectionPool();
 
     private static final String ID = "id";
     private static final String LANGUAGE_NAME = "languageName";

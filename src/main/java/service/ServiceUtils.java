@@ -76,7 +76,7 @@ public class ServiceUtils {
         return isValid;
     }
 
-    static boolean validateUser(String email, String phoneNumber, HttpServletRequest request, HttpServletResponse response, String pathIfNotValid) throws ServletException, IOException {
+    static boolean validateUser(String email, String phoneNumber, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Matcher emailMatcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
         Matcher phoneNumberMatcher = VALID_PHONE_NUMBER_REGEX.matcher(phoneNumber);
         HttpSession session = request.getSession();
@@ -89,7 +89,7 @@ public class ServiceUtils {
 
             setIfInvalidMessage(invalidEmailMessageEn, invalidEmailMessageRu, attribute, request, session);
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher(pathIfNotValid);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/userForm.jsp");
             dispatcher.forward(request, response);
 
             isValid = false;
@@ -101,7 +101,7 @@ public class ServiceUtils {
 
             setIfInvalidMessage(invalidPhoneNumberMessageEn, invalidPhoneNumberMessageRu, attribute, request, session);
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher(pathIfNotValid);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/userForm.jsp");
             dispatcher.forward(request, response);
 
             isValid = false;

@@ -20,8 +20,9 @@ public class ShowOrdersService implements Service {
 
     private static final String ID = "id";
 
-    CartDao cartDao = DaoFactory.getCartDao();
-    CartItemDao cartItemDao = DaoFactory.getCartItemDao();
+    private final DaoFactory daoFactory = DaoFactory.getInstance();
+    private final CartDao cartDao = daoFactory.getCartDao();
+    private final CartItemDao cartItemDao = daoFactory.getCartItemDao();
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException, SQLException, DAOException, ConnectionPoolException {

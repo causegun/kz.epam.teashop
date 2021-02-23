@@ -26,8 +26,9 @@ public class ShowCategoriesService implements Service {
     private static final String ID = "id";
     private static final String CATEGORY = "category";
 
-    CategoryDao categoryDao = DaoFactory.getCategoryDao();
-    LanguageDao languageDao = DaoFactory.getLanguageDao();
+    private final DaoFactory daoFactory = DaoFactory.getInstance();
+    private final CategoryDao categoryDao = daoFactory.getCategoryDao();
+    private final LanguageDao languageDao = daoFactory.getLanguageDao();
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response)

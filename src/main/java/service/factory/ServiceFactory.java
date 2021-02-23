@@ -53,9 +53,7 @@ public class ServiceFactory {
 
     }
     public Service getService(String request) {
-        Service service;
-        service  = SERVICE_MAP.get(request.toUpperCase());
-        return service;
+        return SERVICE_MAP.get(request.toUpperCase());
     }
 
     public static ServiceFactory getInstance() {
