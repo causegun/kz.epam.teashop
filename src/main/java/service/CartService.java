@@ -27,6 +27,12 @@ public class CartService implements Service {
 
     private final static Logger logger = Logger.getLogger(CartService.class);
 
+    private static final String ID = "id";
+    private static final String CREATED_AT = "createdAt";
+    private static final String TOTAL_PRICE = "totalPrice";
+    private static final String CART = "cart";
+    private static final String CART_ITEMS = "cartItems";
+
     CartItemDao cartItemDao = DaoFactory.getCartItemDao();
     ProductDao productDao = DaoFactory.getProductDao();
     CartDao cartDao = DaoFactory.getCartDao();
@@ -62,7 +68,7 @@ public class CartService implements Service {
     public void listCartItems(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
         HttpSession session = request.getSession();
-        Cart cart = (Cart) session.getAttribute("cart");
+        Cart cart = (Cart) session.getAttribute(CART);
 
         if (cart == null) {
             String noCartMessageEn = "Buy something first!";
@@ -82,7 +88,7 @@ public class CartService implements Service {
                 cartItem.setPrice(product.getPrice());
             }
 
-            request.setAttribute("cartItems", cartItems);
+            request.setAttribute(CART_ITEMS, cartItems);
 
             RequestDispatcher dispatcher = request.getRequestDispatcher("/cart.jsp");
             dispatcher.forward(request, response);
@@ -92,11 +98,11 @@ public class CartService implements Service {
     public void deleteCart(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ConnectionPoolException, DAOException {
         HttpSession session = request.getSession();
-        Cart cart = (Cart) session.getAttribute("cart");
+        Cart cart = (Cart) session.getAttribute(CART);
         long cartId = cart.getId();
         cartItemDao.deleteByCartId(cartId);
         cartDao.delete(cart);
-        session.removeAttribute("cart");
+        session.removeAttribute(CART);
 
         response.sendRedirect("/teashop/categoryList");
     }
@@ -104,10 +110,10 @@ public class CartService implements Service {
     public void order(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         HttpSession session = request.getSession();
-        Cart cart = (Cart) session.getAttribute("cart");
-        request.setAttribute("createdAt", cart.getCreatedAt());
-        request.setAttribute("totalPrice", cart.getTotalPrice());
-        session.removeAttribute("cart");
+        Cart cart = (Cart) session.getAttribute(CART);
+        request.setAttribute(CREATED_AT, cart.getCreatedAt());
+        request.setAttribute(TOTAL_PRICE, cart.getTotalPrice());
+        session.removeAttribute(CART);
         RequestDispatcher dispatcher = request.getRequestDispatcher("/order.jsp");
         dispatcher.forward(request, response);
     }
@@ -120,11 +126,11 @@ public class CartService implements Service {
     public void deleteCartItem(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
 
-        long id = Long.parseLong(request.getParameter("id"));
+        long id = Long.parseLong(request.getParameter(ID));
         CartItem cartItem = cartItemDao.get(id);
 
         HttpSession session = request.getSession();
-        Cart cart = (Cart) session.getAttribute("cart");
+        Cart cart = (Cart) session.getAttribute(CART);
 
         Product product = productDao.get(cartItem.getProductId());
         BigDecimal productPrice = product.getPrice();

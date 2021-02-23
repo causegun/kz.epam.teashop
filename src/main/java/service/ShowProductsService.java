@@ -23,6 +23,18 @@ import java.util.List;
 
 public class ShowProductsService implements Service {
 
+    private static final String CATEGORIES = "categories";
+    private static final String LANGUAGES = "languages";
+    private static final String NAME = "name";
+    private static final String LANGUAGE_ID = "languageId";
+    private static final String ID = "id";
+    private static final String CATEGORY_ID = "categoryId";
+    private static final String PRODUCT = "product";
+    private static final String DESCRIPTION = "description";
+    private static final String PRICE = "price";
+    private static final String PATH_TO_PICTURE = "pathToPicture";
+    private static final String PRODUCTS = "products";
+
     CategoryDao categoryDao = DaoFactory.getCategoryDao();
     ProductDao productDao = DaoFactory.getProductDao();
     LanguageDao languageDao = DaoFactory.getLanguageDao();
@@ -67,8 +79,8 @@ public class ShowProductsService implements Service {
 
         List<Product> products = productDao.getAll();
         List<Category> categories = categoryDao.getAll();
-        request.setAttribute("products", products);
-        request.setAttribute("categories", categories);
+        request.setAttribute(PRODUCTS, products);
+        request.setAttribute(CATEGORIES, categories);
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/showProduct.jsp");
         dispatcher.forward(request, response);
@@ -79,8 +91,8 @@ public class ShowProductsService implements Service {
 
         List<Product> products = productDao.getAll();
         List<Category> categories = categoryDao.getAll();
-        request.setAttribute("products", products);
-        request.setAttribute("categories", categories);
+        request.setAttribute(PRODUCTS, products);
+        request.setAttribute(CATEGORIES, categories);
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/showProductRu.jsp");
         dispatcher.forward(request, response);
@@ -96,8 +108,8 @@ public class ShowProductsService implements Service {
 
         List<Language> languages = languageDao.getAll();
         List<Category> categories = categoryDao.getAll();
-        request.setAttribute("languages", languages);
-        request.setAttribute("categories", categories);
+        request.setAttribute(LANGUAGES, languages);
+        request.setAttribute(CATEGORIES, categories);
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/productForm.jsp");
         dispatcher.forward(request, response);
@@ -106,8 +118,8 @@ public class ShowProductsService implements Service {
     public void insertProduct(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
 
-        long languageId = Long.parseLong(request.getParameter("languageId"));
-        long categoryId = Long.parseLong(request.getParameter("categoryId"));
+        long languageId = Long.parseLong(request.getParameter(LANGUAGE_ID));
+        long categoryId = Long.parseLong(request.getParameter(CATEGORY_ID));
 
         HttpSession session = request.getSession();
 
@@ -120,10 +132,10 @@ public class ShowProductsService implements Service {
             ServiceUtils.setIfInvalidMessage(mismatchErrorMessageEn, mismatchErrorMessageRu, attribute, request, session);
             setLanguagesCategoriesAttributes(request, response);
         } else {
-            String name = request.getParameter("name");
-            String description = request.getParameter("description");
-            BigDecimal price = new BigDecimal(request.getParameter("price"));
-            String pathToPicture = request.getParameter("pathToPicture");
+            String name = request.getParameter(NAME);
+            String description = request.getParameter(DESCRIPTION);
+            BigDecimal price = new BigDecimal(request.getParameter(PRICE));
+            String pathToPicture = request.getParameter(PATH_TO_PICTURE);
             Product product = new Product(languageId, categoryId, name, description, price, pathToPicture);
             productDao.insert(product);
         }
@@ -134,7 +146,7 @@ public class ShowProductsService implements Service {
     public void deleteProduct(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ConnectionPoolException, DAOException {
 
-        long id = Long.parseLong(request.getParameter("id"));
+        long id = Long.parseLong(request.getParameter(ID));
         Product product = new Product();
         product.setId(id);
         productDao.delete(product);
@@ -144,16 +156,16 @@ public class ShowProductsService implements Service {
 
     public void showEditForm(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
-        long id = Long.parseLong(request.getParameter("id"));
+        long id = Long.parseLong(request.getParameter(ID));
         setProductLanguagesCategoriesAttributes(id, request, response);
     }
 
     public void updateProduct(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
 
-        long id = Long.parseLong(request.getParameter("id"));
-        long languageId = Long.parseLong(request.getParameter("languageId"));
-        long categoryId = Long.parseLong(request.getParameter("categoryId"));
+        long id = Long.parseLong(request.getParameter(ID));
+        long languageId = Long.parseLong(request.getParameter(LANGUAGE_ID));
+        long categoryId = Long.parseLong(request.getParameter(CATEGORY_ID));
 
         HttpSession session = request.getSession();
 
@@ -166,11 +178,11 @@ public class ShowProductsService implements Service {
             ServiceUtils.setIfInvalidMessage(mismatchErrorMessageEn, mismatchErrorMessageRu, attribute, request, session);
             setProductLanguagesCategoriesAttributes(id, request, response);
         } else {
-            String name = request.getParameter("name");
-            String description = request.getParameter("description");
-            String priceString = request.getParameter("price");
+            String name = request.getParameter(NAME);
+            String description = request.getParameter(DESCRIPTION);
+            String priceString = request.getParameter(PRICE);
             BigDecimal price = new BigDecimal(priceString);
-            String pathToPicture = request.getParameter("pathToPicture");
+            String pathToPicture = request.getParameter(PATH_TO_PICTURE);
             Product product = new Product(id, languageId, categoryId, name, description, price, pathToPicture);
             productDao.update(product);
         }
@@ -184,9 +196,9 @@ public class ShowProductsService implements Service {
         Product product = productDao.get(id);
         List<Language> languages = languageDao.getAll();
         List<Category> categories = categoryDao.getAll();
-        request.setAttribute("product", product);
-        request.setAttribute("languages", languages);
-        request.setAttribute("categories", categories);
+        request.setAttribute(PRODUCT, product);
+        request.setAttribute(LANGUAGES, languages);
+        request.setAttribute(CATEGORIES, categories);
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/productForm.jsp");
         dispatcher.forward(request, response);

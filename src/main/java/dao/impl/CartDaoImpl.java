@@ -32,6 +32,11 @@ public class CartDaoImpl implements CartDao {
 
     private static final String SQL_DELETE_CART ="DELETE FROM cart WHERE id = ?";
 
+    private static final String ID = "id";
+    private static final String USER_ID = "userId";
+    private static final String CREATED_AT = "createdAt";
+    private static final String TOTAL_PRICE = "totalPrice";
+
     ConnectionPool connectionPool = DaoFactory.getConnectionPool();
 
     @Override
@@ -49,7 +54,7 @@ public class CartDaoImpl implements CartDao {
 
             while (resultSet.next()) {
                 Cart cart = new Cart();
-                id = resultSet.getLong("id");
+                id = resultSet.getLong(ID);
                 setDataToCart(id, cart, resultSet);
                 carts.add(cart);
             }
@@ -95,9 +100,9 @@ public class CartDaoImpl implements CartDao {
         String createdAt;
         BigDecimal totalPrice;
 
-        userId = resultSet.getLong("userId");
-        createdAt = resultSet.getString("createdAt");
-        totalPrice = resultSet.getBigDecimal("totalPrice");
+        userId = resultSet.getLong(USER_ID);
+        createdAt = resultSet.getString(CREATED_AT);
+        totalPrice = resultSet.getBigDecimal(TOTAL_PRICE);
 
         cart.setId(id);
         cart.setUserId(userId);
@@ -193,7 +198,7 @@ public class CartDaoImpl implements CartDao {
 
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                cartId = resultSet.getLong("id");
+                cartId = resultSet.getLong(ID);
             }
         } catch (ConnectionPoolException | SQLException e) {
             logger.error("Error while getting ID from cart database. Message: " + e.getMessage());

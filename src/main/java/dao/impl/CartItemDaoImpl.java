@@ -37,6 +37,12 @@ public class CartItemDaoImpl implements CartItemDao {
 
     ConnectionPool connectionPool = DaoFactory.getConnectionPool();
 
+    private static final String ID = "id";
+    private static final String PRODUCT_ID = "productId";
+    private static final String CREATED_AT = "createdAt";
+    private static final String QUANTITY = "quantity";
+    private static final String CART_ID = "cartId";
+
     @Override
     public List<CartItem> getAll() throws DAOException, ConnectionPoolException {
         List<CartItem> cartItems = new ArrayList<>();
@@ -52,7 +58,7 @@ public class CartItemDaoImpl implements CartItemDao {
 
             while (resultSet.next()) {
                 CartItem cartItem = new CartItem();
-                id = resultSet.getLong("id");
+                id = resultSet.getLong(ID);
                 setDataToCartItems(id, cartItem, resultSet);
                 cartItems.add(cartItem);
             }
@@ -97,10 +103,10 @@ public class CartItemDaoImpl implements CartItemDao {
         long cartId;
         String createdAt;
         int quantity;
-        productId = resultSet.getLong("productId");
-        cartId = resultSet.getLong("cartId");
-        createdAt = resultSet.getString("createdAt");
-        quantity = resultSet.getInt("quantity");
+        productId = resultSet.getLong(PRODUCT_ID);
+        cartId = resultSet.getLong(CART_ID);
+        createdAt = resultSet.getString(CREATED_AT);
+        quantity = resultSet.getInt(QUANTITY);
 
         cartItem.setId(id);
         cartItem.setProductId(productId);
@@ -220,7 +226,7 @@ public class CartItemDaoImpl implements CartItemDao {
 
             while (resultSet.next()) {
                 CartItem cartItem = new CartItem();
-                id = resultSet.getLong("id");
+                id = resultSet.getLong(ID);
                 setDataToCartItems(id, cartItem, resultSet);
                 cartItems.add(cartItem);
             }

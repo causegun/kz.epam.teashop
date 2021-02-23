@@ -19,6 +19,13 @@ import java.util.List;
 
 public class ShowCategoriesService implements Service {
 
+    private static final String CATEGORIES = "categories";
+    private static final String LANGUAGES = "languages";
+    private static final String NAME = "name";
+    private static final String LANGUAGE_ID = "languageId";
+    private static final String ID = "id";
+    private static final String CATEGORY = "category";
+
     CategoryDao categoryDao = DaoFactory.getCategoryDao();
     LanguageDao languageDao = DaoFactory.getLanguageDao();
 
@@ -61,7 +68,7 @@ public class ShowCategoriesService implements Service {
             throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
 
         List<Category> categories = categoryDao.getAll();
-        request.setAttribute("categories", categories);
+        request.setAttribute(CATEGORIES, categories);
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/showCategory.jsp");
         dispatcher.forward(request, response);
@@ -71,7 +78,7 @@ public class ShowCategoriesService implements Service {
             throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
 
         List<Category> categories = categoryDao.getAll();
-        request.setAttribute("categories", categories);
+        request.setAttribute(CATEGORIES, categories);
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/showCategoryRu.jsp");
         dispatcher.forward(request, response);
@@ -82,8 +89,8 @@ public class ShowCategoriesService implements Service {
 
         List<Language> languages = languageDao.getAll();
         List<Category> categories = categoryDao.getAll();
-        request.setAttribute("languages", languages);
-        request.setAttribute("categories", categories);
+        request.setAttribute(LANGUAGES, languages);
+        request.setAttribute(CATEGORIES, categories);
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/categoryForm.jsp");
         dispatcher.forward(request, response);
@@ -92,8 +99,8 @@ public class ShowCategoriesService implements Service {
     public void insertCategory(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ConnectionPoolException, DAOException {
 
-        long languageId = Long.parseLong(request.getParameter("languageId"));
-        String categoryName = request.getParameter("name");
+        long languageId = Long.parseLong(request.getParameter(LANGUAGE_ID));
+        String categoryName = request.getParameter(NAME);
         Category category = new Category(languageId, categoryName);
         categoryDao.insert(category);
 
@@ -103,7 +110,7 @@ public class ShowCategoriesService implements Service {
     public void deleteCategory(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ConnectionPoolException, DAOException {
 
-        long id = Long.parseLong(request.getParameter("id"));
+        long id = Long.parseLong(request.getParameter(ID));
         Category category = new Category();
         category.setId(id);
         categoryDao.delete(category);
@@ -114,11 +121,11 @@ public class ShowCategoriesService implements Service {
     public void showEditForm(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
 
-        long id = Long.parseLong(request.getParameter("id"));
+        long id = Long.parseLong(request.getParameter(ID));
         Category category = categoryDao.get(id);
         List<Language> languages = languageDao.getAll();
-        request.setAttribute("languages", languages);
-        request.setAttribute("category", category);
+        request.setAttribute(LANGUAGES, languages);
+        request.setAttribute(CATEGORY, category);
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/categoryForm.jsp");
         dispatcher.forward(request, response);
@@ -127,9 +134,9 @@ public class ShowCategoriesService implements Service {
     public void updateCategory(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
 
-        long id = Long.parseLong(request.getParameter("id"));
-        long languageId = Long.parseLong(request.getParameter("languageId"));
-        String categoryName = request.getParameter("name");
+        long id = Long.parseLong(request.getParameter(ID));
+        long languageId = Long.parseLong(request.getParameter(LANGUAGE_ID));
+        String categoryName = request.getParameter(NAME);
 
         Category category = new Category();
         category.setId(id);

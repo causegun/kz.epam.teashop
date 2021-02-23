@@ -17,6 +17,15 @@ import java.util.List;
 
 public class ShowUsersService implements Service {
 
+    private static final String ID = "id";
+    private static final String NAME = "name";
+    private static final String EMAIL = "email";
+    private static final String PASSWORD = "password";
+    private static final String PHONE_NUMBER = "phoneNumber";
+    private static final String IS_ADMIN = "isAdmin";
+    private static final String USERS = "users";
+    private static final String USER = "user";
+
     UserDao userDao = DaoFactory.getUserDao();
 
     @Override
@@ -55,7 +64,7 @@ public class ShowUsersService implements Service {
             throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
 
         List<User> users = userDao.getAll();
-        request.setAttribute("users", users);
+        request.setAttribute(USERS, users);
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/showUser.jsp");
         dispatcher.forward(request, response);
@@ -71,7 +80,7 @@ public class ShowUsersService implements Service {
     public void insertUser(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
 
-        String email = request.getParameter("email");
+        String email = request.getParameter(EMAIL);
         User existingUser = userDao.getByEmail(email);
         if (existingUser != null) {
             request.setAttribute("userExistMessage", "User already exist");
@@ -80,13 +89,13 @@ public class ShowUsersService implements Service {
             dispatcher.forward(request, response);
         } else {
 
-            String userPassword = request.getParameter("password");
-            String phoneNumber = request.getParameter("phoneNumber");
+            String userPassword = request.getParameter(PASSWORD);
+            String phoneNumber = request.getParameter(PHONE_NUMBER);
 
             if (ServiceUtils.validateUser(email, phoneNumber, userPassword, request, response, "/userForm.jsp")) {
 
-                String name = request.getParameter("name");
-                boolean isAdmin = Boolean.parseBoolean(request.getParameter("isAdmin"));
+                String name = request.getParameter(NAME);
+                boolean isAdmin = Boolean.parseBoolean(request.getParameter(IS_ADMIN));
                 String hashedPassword = ServiceUtils.hashPassword(userPassword);
                 User user = new User(isAdmin, name, email, hashedPassword, phoneNumber);
                 userDao.insert(user);
@@ -99,7 +108,7 @@ public class ShowUsersService implements Service {
     public void deleteUser(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ConnectionPoolException, DAOException {
 
-        long id = Long.parseLong(request.getParameter("id"));
+        long id = Long.parseLong(request.getParameter(ID));
         User user = new User();
         user.setId(id);
         userDao.delete(user);
@@ -110,9 +119,9 @@ public class ShowUsersService implements Service {
     public void showEditForm(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
 
-        long id = Long.parseLong(request.getParameter("id"));
+        long id = Long.parseLong(request.getParameter(ID));
         User user = userDao.get(id);
-        request.setAttribute("user", user);
+        request.setAttribute(USER, user);
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/userForm.jsp");
         dispatcher.forward(request, response);
@@ -121,16 +130,16 @@ public class ShowUsersService implements Service {
     public void updateUser(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException, ConnectionPoolException, DAOException {
 
-        String email = request.getParameter("email");
-        String phoneNumber = request.getParameter("phoneNumber");
-        long id = Long.parseLong(request.getParameter("id"));
+        String email = request.getParameter(EMAIL);
+        String phoneNumber = request.getParameter(PHONE_NUMBER);
+        long id = Long.parseLong(request.getParameter(ID));
         User userUpdate = userDao.get(id);
-        request.setAttribute("user", userUpdate);
+        request.setAttribute(USER, userUpdate);
 
         if (ServiceUtils.validateUser(email, phoneNumber, request, response, "/userForm.jsp")) {
-            String name = request.getParameter("name");
+            String name = request.getParameter(NAME);
 
-            boolean isAdmin = Boolean.parseBoolean(request.getParameter("isAdmin"));
+            boolean isAdmin = Boolean.parseBoolean(request.getParameter(IS_ADMIN));
 
             User user = new User();
             user.setId(id);
@@ -142,7 +151,6 @@ public class ShowUsersService implements Service {
 
             response.sendRedirect("/teashop/admin/users");
         }
-
 
     }
 }

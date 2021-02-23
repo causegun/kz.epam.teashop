@@ -30,6 +30,9 @@ public class LanguageDaoImpl implements LanguageDao {
 
     ConnectionPool connectionPool = DaoFactory.getConnectionPool();
 
+    private static final String ID = "id";
+    private static final String LANGUAGE_NAME = "languageName";
+
     @Override
     public List<Language> getAll() throws ConnectionPoolException, DAOException {
         List<Language> languages = new ArrayList<>();
@@ -47,8 +50,8 @@ public class LanguageDaoImpl implements LanguageDao {
 
             while (resultSet.next()) {
                 Language language = new Language();
-                id = resultSet.getLong("id");
-                languageName = resultSet.getString("languageName");
+                id = resultSet.getLong(ID);
+                languageName = resultSet.getString(LANGUAGE_NAME);
 
                 language.setId(id);
                 language.setName(languageName);

@@ -39,6 +39,12 @@ public class UserDaoImpl implements UserDao {
 
     private static final String SQL_SELECT_BY_EMAIL = "SELECT id, userName, email FROM user_info WHERE email = ?";
 
+    private static final String ID = "id";
+    private static final String USER_NAME = "userName";
+    private static final String EMAIL = "email";
+    private static final String PHONE_NUMBER = "phoneNumber";
+    private static final String IS_ADMIN = "isAdmin";
+
     ConnectionPool connectionPool = DaoFactory.getConnectionPool();
 
     public UserDaoImpl() {
@@ -60,7 +66,7 @@ public class UserDaoImpl implements UserDao {
             while (resultSet.next()) {
                 User user = new User();
 
-                id = resultSet.getLong("id");
+                id = resultSet.getLong(ID);
                 setDataToUser(resultSet, id, user);
                 users.add(user);
             }
@@ -79,10 +85,10 @@ public class UserDaoImpl implements UserDao {
         boolean isAdmin;
         String email;
         String phoneNumber;
-        userName = resultSet.getString("userName");
-        isAdmin = resultSet.getBoolean("isAdmin");
-        email = resultSet.getString("email");
-        phoneNumber = resultSet.getString("phoneNumber");
+        userName = resultSet.getString(USER_NAME);
+        isAdmin = resultSet.getBoolean(IS_ADMIN);
+        email = resultSet.getString(EMAIL);
+        phoneNumber = resultSet.getString(PHONE_NUMBER);
 
         user.setId(id);
         user.setName(userName);
@@ -219,8 +225,8 @@ public class UserDaoImpl implements UserDao {
             if (resultSet.next()) {
                 user = new User();
 
-                userName = resultSet.getString("userName");
-                emailFromDB = resultSet.getString("email");
+                userName = resultSet.getString(USER_NAME);
+                emailFromDB = resultSet.getString(EMAIL);
 
                 user.setName(userName);
                 user.setEmail(emailFromDB);
@@ -254,8 +260,8 @@ public class UserDaoImpl implements UserDao {
             if (resultSet.next()) {
                 user = new User();
 
-                userName = resultSet.getString("userName");
-                emailFromDB = resultSet.getString("email");
+                userName = resultSet.getString(USER_NAME);
+                emailFromDB = resultSet.getString(EMAIL);
 
                 user.setName(userName);
                 user.setEmail(emailFromDB);
@@ -288,8 +294,8 @@ public class UserDaoImpl implements UserDao {
             if (resultSet.next()) {
                 user = new User();
 
-                id = resultSet.getLong("id");
-                userName = resultSet.getString("userName");
+                id = resultSet.getLong(ID);
+                userName = resultSet.getString(USER_NAME);
 
                 user.setId(id);
                 user.setName(userName);

@@ -36,6 +36,10 @@ public class CategoryDaoImpl implements CategoryDao {
     private static final String SQL_UPDATE_CATEGORY =
             "UPDATE category SET languageId = ?, categoryName = ? WHERE id = ? ";
 
+    private static final String ID = "id";
+    private static final String LANGUAGE_ID = "languageId";
+    private static final String CATEGORY_NAME = "categoryName";
+
     ConnectionPool connectionPool = DaoFactory.getConnectionPool();
 
     @Override
@@ -56,8 +60,8 @@ public class CategoryDaoImpl implements CategoryDao {
 
             while (resultSet.next()) {
                 Category category = new Category();
-                id = resultSet.getLong("id");
-                categoryName = resultSet.getString("categoryName");
+                id = resultSet.getLong(ID);
+                categoryName = resultSet.getString(CATEGORY_NAME);
                 category.setId(id);
                 category.setLanguageId(languageId);
                 category.setName(categoryName);
@@ -93,9 +97,9 @@ public class CategoryDaoImpl implements CategoryDao {
 
             while (resultSet.next()) {
                 Category category = new Category();
-                id = resultSet.getLong("id");
-                languageId = resultSet.getLong("languageId");
-                categoryName = resultSet.getString("categoryName");
+                id = resultSet.getLong(ID);
+                languageId = resultSet.getLong(LANGUAGE_ID);
+                categoryName = resultSet.getString(CATEGORY_NAME);
 
                 category.setId(id);
                 category.setLanguageId(languageId);
@@ -135,8 +139,8 @@ public class CategoryDaoImpl implements CategoryDao {
             String categoryName;
 
             while (resultSet.next()) {
-                languageId = resultSet.getLong("languageId");
-                categoryName = resultSet.getString("categoryName");
+                languageId = resultSet.getLong(LANGUAGE_ID);
+                categoryName = resultSet.getString(CATEGORY_NAME);
 
                 category.setId(id);
                 category.setLanguageId(languageId);

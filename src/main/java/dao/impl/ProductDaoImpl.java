@@ -36,7 +36,16 @@ public class ProductDaoImpl implements ProductDao {
     private static final String SQL_SELECT_PRODUCTS_BY_CATEGORY =
             "SELECT id, languageId, categoryId, productName, productDescription, price, pathToPicture FROM product WHERE categoryId = ?";
 
+    private static final String ID = "id";
+    private static final String LANGUAGE_ID = "languageId";
+    private static final String CATEGORY_ID = "categoryId";
+    private static final String PRODUCT_NAME = "productName";
+    private static final String PRODUCT_DESCRIPTION = "productDescription";
+    private static final String PRICE = "price";
+    private static final String PATH_TO_PICTURE = "pathToPicture";
+
     ConnectionPool connectionPool = DaoFactory.getConnectionPool();
+
 
     public ProductDaoImpl() {
     }
@@ -58,7 +67,7 @@ public class ProductDaoImpl implements ProductDao {
             while (resultSet.next()) {
                 Product product = new Product();
 
-                id = resultSet.getLong("id");
+                id = resultSet.getLong(ID);
                 setDataToProduct(id, product, resultSet);
 
                 products.add(product);
@@ -89,7 +98,7 @@ public class ProductDaoImpl implements ProductDao {
             while (resultSet.next()) {
                 Product product = new Product();
 
-                id = resultSet.getLong("id");
+                id = resultSet.getLong(ID);
                 setDataToProduct(id, product, resultSet);
 
                 products.add(product);
@@ -138,12 +147,12 @@ public class ProductDaoImpl implements ProductDao {
         BigDecimal price;
         String pathToPicture;
 
-        languageId = resultSet.getLong("languageId");
-        categoryId = resultSet.getLong("categoryId");
-        productName = resultSet.getString("productName");
-        productDescription = resultSet.getString("productDescription");
-        price = resultSet.getBigDecimal("price");
-        pathToPicture = resultSet.getString("pathToPicture");
+        languageId = resultSet.getLong(LANGUAGE_ID);
+        categoryId = resultSet.getLong(CATEGORY_ID);
+        productName = resultSet.getString(PRODUCT_NAME);
+        productDescription = resultSet.getString(PRODUCT_DESCRIPTION);
+        price = resultSet.getBigDecimal(PRICE);
+        pathToPicture = resultSet.getString(PATH_TO_PICTURE);
 
         product.setId(id);
         product.setLanguageId(languageId);
