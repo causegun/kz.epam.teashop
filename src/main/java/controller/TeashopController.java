@@ -18,7 +18,7 @@ import java.text.ParseException;
 public class TeashopController extends HttpServlet {
 
     private final ServiceFactory serviceFactory = ServiceFactory.getInstance();
-    private final static Logger logger = Logger.getLogger(ConnectionPool.class);
+    private final static Logger logger = Logger.getLogger(TeashopController.class);
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
