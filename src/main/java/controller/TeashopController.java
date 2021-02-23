@@ -1,6 +1,5 @@
 package controller;
 
-import connection.ConnectionPool;
 import exception.ConnectionPoolException;
 import exception.DAOException;
 import org.apache.log4j.Logger;
