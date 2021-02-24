@@ -27,11 +27,8 @@ public class TeashopController extends HttpServlet {
 
         try {
             currentService.execute(req, resp);
-        } catch (NullPointerException | SQLException | ParseException e) {
+        } catch (NullPointerException | SQLException | ParseException | DAOException | ConnectionPoolException e) {
             logger.error("Error while executing service. Message: " + e.getMessage());
-            e.printStackTrace();
-            throw new ServletException("Error while executing service. ", e);
-        } catch (DAOException | ConnectionPoolException e) {
             e.printStackTrace();
             throw new ServletException("Error while executing service. ", e);
         }
