@@ -1,6 +1,6 @@
 package entity;
 
-public class Language implements Entity {
+public class Language extends Entity {
     private long id;
     private String name;
 

@@ -2,7 +2,7 @@ package entity;
 
 import java.util.Objects;
 
-public class User implements Entity {
+public class User extends Entity {
     private long id;
     private boolean isAdmin;
     private String name;

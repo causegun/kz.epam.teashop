@@ -3,7 +3,7 @@ package entity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Category implements Entity {
+public class Category extends Entity {
 
     private long id;
     private long languageId;

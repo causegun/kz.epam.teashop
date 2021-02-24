@@ -2,7 +2,7 @@ package entity;
 
 import java.math.BigDecimal;
 
-public class Product implements Entity {
+public class Product extends Entity {
 
     private long id;
     private long languageId;
