@@ -139,9 +139,10 @@ public class ShowProductsService implements Service {
             String pathToPicture = request.getParameter(PATH_TO_PICTURE);
             Product product = new Product(languageId, categoryId, name, description, price, pathToPicture);
             productDao.insert(product);
+            response.sendRedirect("/teashop/admin/products");
         }
 
-        response.sendRedirect("/teashop/admin/products");
+//        response.sendRedirect("/teashop/admin/products");
     }
 
     public void deleteProduct(HttpServletRequest request, HttpServletResponse response)
